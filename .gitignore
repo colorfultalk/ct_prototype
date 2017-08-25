@@ -1,0 +1,4 @@
+.python-version
+*.pyc
+aws_keys.txt
+token.sh
