@@ -4,12 +4,6 @@ from io import BytesIO
 from PIL import Image
 import random
 
-# for handling aws s3
-import boto3
-bucketName = 'ct-prototype'
-s3 = boto3.resource('s3')
-bucket = s3.Bucket(bucketName)
-
 def random_string(length, seq='0123456789abcdefghijklmnopqrstuvwxyz'):
     sr = random.SystemRandom()
     return ''.join([sr.choice(seq) for i in range(length)])
