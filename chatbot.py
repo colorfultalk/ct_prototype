@@ -88,9 +88,9 @@ def sequence_is_not_initialized( session ):
         # set first input
         session['next_input'] = IMAGE
         print( 'sequence initialized' )
-        return True
-    else:
         return False
+    else:
+        return True
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
