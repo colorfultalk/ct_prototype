@@ -116,18 +116,22 @@ def handle_message(event):
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_message(event):
     session = getattr(g, 'session', None)
-
-    # get message_content
     msgId = event.message.id
     message_content = line_bot_api.get_message_content(msgId)
 
-    # upload s3
-    response  = img_s3.upload_to_s3( message_content.content, bucket )
-    print( response )
+    if sequence_is_not_started or session.get('next_input') == IMAGE:
+        # upload s3
+        response  = img_s3.upload_to_s3( message_content.content, bucket )
+        print( response )
+        # set next input
+        session['next_input'] = DESCRIPTION
 
-    line_bot_api.reply_message(
+    else:
+        # when get wrong input value
+        line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text='you sent me an image'))
+            TextSendMessage(text='your input is wrong, please retry!'))
+
 
 if __name__ == "__main__":
     app.run()
