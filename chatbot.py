@@ -92,12 +92,17 @@ def sequence_is_not_initialized( session ):
         return False
 
 def basic_reply( reply_token, next_input ):
-    reply_text = 'please input ' + next_input + ' next !'
+    # set reply_text
+    if next_input == ALL_SET:
+        reply_text = 'input sequence completed !'
+    else:
+        reply_text = 'please input ' + next_input + ' next !'
+
+    # reply
     line_bot_api.reply_message(
         reply_token,
         TextSendMessage( text = reply_text )
     )
-
 
 # text handler
 @handler.add(MessageEvent, message=TextMessage)
