@@ -84,13 +84,14 @@ def after_request(response):
     return response
 
 def sequence_is_not_initialized( session ):
-    if 'next_input' not in session:
+    if 'next_input' not in session or session.get('next_input') == "":
         # set first input
         session['next_input'] = IMAGE
         print( 'sequence initialized' )
-        return False
-    else:
         return True
+    else:
+        print( 'already started' )
+        return False
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
