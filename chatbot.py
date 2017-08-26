@@ -83,7 +83,7 @@ def after_request(response):
     botSessionInterface.save_session(app, session, response)
     return response
 
-def sequence_is_not_started( session ):
+def sequence_is_not_initialized( session ):
     if 'next_input' not in session:
         # set first input
         session['next_input'] = IMAGE
@@ -97,12 +97,12 @@ def handle_message(event):
     text    = event.message.text
     session = getattr(g, 'session', None)
 
-    if text == 'claer':
+    if text == 'clear':
         # clear session key
-        session.pop['next_input']
+        del session['next_input']
         print( 'session cleared' )
 
-    elif sequence_is_not_started:
+    elif sequence_is_not_initialized:
         # sequence initialized
         pass
 
@@ -125,7 +125,7 @@ def handle_message(event):
     msgId = event.message.id
     message_content = line_bot_api.get_message_content(msgId)
 
-    if sequence_is_not_started or session.get('next_input') == IMAGE:
+    if sequence_is_not_initialized or session.get('next_input') == IMAGE:
         # upload s3
         response  = img_s3.upload_to_s3( message_content.content, bucket )
         print( response )
