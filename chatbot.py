@@ -99,7 +99,8 @@ def handle_message(event):
 
     if text == 'claer':
         # clear session key
-        del session['next_input']
+        session.pop['next_input']
+        print( 'session cleared' )
 
     elif sequence_is_not_started:
         # sequence initialized
