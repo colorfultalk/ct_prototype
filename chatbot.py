@@ -91,6 +91,14 @@ def sequence_is_not_initialized( session ):
     else:
         return False
 
+def basic_reply( reply_token, next_input ):
+    reply_text = 'please input ' + next_input + ' next !'
+    line_bot_api.reply_message(
+        reply_token,
+        TextSendMessage( text = reply_text )
+    )
+
+
 # text handler
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -111,6 +119,7 @@ def handle_message(event):
         session['DESCRIPTION'] = text
         # set next input
         session['next_input']  = LOCATION
+        basic_reply( evnet.reply_token, session.get('next_input') )
 
     else:
         # when get wrong input value
@@ -133,6 +142,7 @@ def handle_message(event):
         # set input value to session
         session['IMAGE'] = 'http://test.com'
         session['next_input'] = DESCRIPTION
+        basic_reply( evnet.reply_token, session.get('next_input') )
 
     else:
         # when get wrong input value
