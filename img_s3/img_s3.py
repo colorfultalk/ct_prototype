@@ -25,7 +25,8 @@ def upload_to_s3( msg_content, s3_bucket, obj_key_name = random_string(15) ):
     pil_img.save(out, "JPEG", optimize=True)
 
     # s3 upload
-    obj = bucket.Object( obj_key_name )
+    key = 'tmp/' + obj_key_name + '.jpg'
+    obj = bucket.Object( key )
     response = obj.put(
     Body = out.getvalue(),
         ContentType = 'image/png'
