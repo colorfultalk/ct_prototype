@@ -119,7 +119,7 @@ def handle_message(event):
         session['DESCRIPTION'] = text
         # set next input
         session['next_input']  = LOCATION
-        basic_reply( evnet.reply_token, session.get('next_input') )
+        basic_reply( event.reply_token, session.get('next_input') )
 
     else:
         # when get wrong input value
@@ -142,7 +142,7 @@ def handle_message(event):
         # set input value to session
         session['IMAGE'] = 'http://test.com'
         session['next_input'] = DESCRIPTION
-        basic_reply( evnet.reply_token, session.get('next_input') )
+        basic_reply( event.reply_token, session.get('next_input') )
 
     else:
         # when get wrong input value
