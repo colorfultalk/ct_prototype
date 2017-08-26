@@ -98,6 +98,7 @@ def handle_message(event):
 
     if sequence_is_not_started:
         # sequence initialized
+        pass
 
     elif session.get('next_input') == DESCRIPTION:
         # set input value to session
