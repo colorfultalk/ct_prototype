@@ -3,14 +3,7 @@ import os
 import sys
 
 # for handling image
-import io
-from io import BytesIO
-from PIL import Image
-import random
-
-def random_string(length, seq='0123456789abcdefghijklmnopqrstuvwxyz'):
-    sr = random.SystemRandom()
-    return ''.join([sr.choice(seq) for i in range(length)])
+from img_s3 import img_s3
 
 # for handling aws s3
 import boto3
@@ -119,27 +112,15 @@ def handle_message(event):
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_message(event):
 
-    saveImgSize = (1000, 680)
-
+    # get mes_content
     msgId = event.message.id
     message_content = line_bot_api.get_message_content(msgId)
     print( message_content )
 
-    # get image that user sent
-    content = message_content.content
-    img_bin = io.BytesIO(content)
-    pil_img = Image.open( img_bin ).resize( saveImgSize )
-    print( pil_img )
-
     # upload s3
-    out = BytesIO()
-    pil_img.save(out, "JPEG", optimize=True)
-    PUT_OBJECT_KEY_NAME = 'tmp/' + random_string(10) + '.jpg'
-    obj = bucket.Object(PUT_OBJECT_KEY_NAME)
-    response = obj.put(
-            Body = out.getvalue(),
-            ContentType = 'image/png'
-        )
+    obj_key_name = 'tmp/' + random_string(10) + '.jpg'
+    response     = img_s3.upload_to_s3( message_content, bucket, obj_key_name)
+    print( response )
 
     line_bot_api.reply_message(
             event.reply_token,
