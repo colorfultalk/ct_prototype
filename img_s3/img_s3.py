@@ -4,6 +4,12 @@ from io import BytesIO
 from PIL import Image
 import random
 
+# for handling aws s3
+import boto3
+bucketName = 'ct-prototype'
+s3 = boto3.resource('s3')
+bucket = s3.Bucket(bucketName)
+
 def random_string(length, seq='0123456789abcdefghijklmnopqrstuvwxyz'):
     sr = random.SystemRandom()
     return ''.join([sr.choice(seq) for i in range(length)])
@@ -26,7 +32,7 @@ def upload_to_s3( msg_content, s3_bucket, obj_key_name = random_string(15) ):
 
     # s3 upload
     key = 'tmp/' + obj_key_name + '.jpg'
-    obj = bucket.Object( key )
+    obj = s3_bucket.Object( key )
     response = obj.put(
     Body = out.getvalue(),
         ContentType = 'image/png'
