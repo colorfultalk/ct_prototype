@@ -118,8 +118,7 @@ def handle_message(event):
     print( message_content )
 
     # upload s3
-    obj_key_name = 'tmp/' + random_string(10) + '.jpg'
-    response     = img_s3.upload_to_s3( message_content, bucket, obj_key_name)
+    response     = img_s3.upload_to_s3( message_content, bucket )
     print( response )
 
     line_bot_api.reply_message(
