@@ -72,7 +72,6 @@ def callback():
     except InvalidSignatureError:
         abort(400)
 
-
     return 'OK'
 
 @app.after_request
@@ -83,14 +82,29 @@ def after_request(response):
     botSessionInterface.save_session(app, session, response)
     return response
 
+def sequence_is_not_initialized( session ):
+    if 'next_input' not in session:
+        # set first input
+        session['next_input'] = IMAGE
+        print( 'sequence initialized' )
+        return True
+    else:
+        print( 'already started' )
+        return False
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     text    = event.message.text
     session = getattr(g, 'session', None)
 
-    if 'next_input' not in session:
-        # set first input
-        session['next_input'] = IMAGE
+    if text == 'clear':
+        # clear session key
+        del session['next_input']
+        print( 'session cleared' )
+
+    elif sequence_is_not_initialized( session ):
+        # sequence initialized
+        pass
 
     elif session.get('next_input') == DESCRIPTION:
         # set input value to session
@@ -107,18 +121,23 @@ def handle_message(event):
 # image handler
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_message(event):
-
-    # get message_content
+    session = getattr(g, 'session', None)
     msgId = event.message.id
     message_content = line_bot_api.get_message_content(msgId)
 
-    # upload s3
-    response  = img_s3.upload_to_s3( message_content.content, bucket )
-    print( response )
+    if sequence_is_not_initialized( session ) or session.get('next_input') == IMAGE:
+        # upload s3
+        response  = img_s3.upload_to_s3( message_content.content, bucket )
+        print( response )
+        # set next input
+        session['next_input'] = DESCRIPTION
 
-    line_bot_api.reply_message(
+    else:
+        # when get wrong input value
+        line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text='you sent me an image'))
+            TextSendMessage(text='your input is wrong, please retry!'))
+
 
 if __name__ == "__main__":
     app.run()
