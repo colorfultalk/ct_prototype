@@ -11,7 +11,7 @@ def random_string(length, seq='0123456789abcdefghijklmnopqrstuvwxyz'):
 # retrieve image that user sent from line message content
 def retrieve_image_from_content( msg_content , save_img_size = (1000, 680) ):
     img_bin = io.BytesIO( msg_content )
-    pil_img = Image.open( img_bin ).resize( saveImgSize )
+    pil_img = Image.open( img_bin ).resize( save_img_size )
     return( pil_img )
 
 # upload s3
