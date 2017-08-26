@@ -2,6 +2,9 @@ from flask import Flask, request, abort, g
 import os
 import sys
 
+# get constants
+from init import *
+
 # for handling image
 from img_s3 import img_s3
 
@@ -69,6 +72,7 @@ def callback():
     except InvalidSignatureError:
         abort(400)
 
+
     return 'OK'
 
 @app.after_request
@@ -84,29 +88,21 @@ def handle_message(event):
     text    = event.message.text
     session = getattr(g, 'session', None)
 
-    if session.get('next') == 1:
-        # set next phase
-        session['next'] = 2
+    if 'next_input' not in session:
+        # set first input
+        session['next_input'] = IMAGE
 
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text='phase1'))
-
-    elif session.get('next') == 2:
-        # set next phase
-        session['next'] = 1
-
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text='phase2'))
+    elif session.get('next_input') == DESCRIPTION:
+        # set input value to session
+        session['DESCRIPTION'] = text
+        # set next input
+        session['next_input']  = LOCATION
 
     else:
-        # set next phase
-        session['next'] = 1
-
+        # when get wrong input value
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text='start'))
+            TextSendMessage(text='your input is wrong, please retry!'))
 
 # image handler
 @handler.add(MessageEvent, message=ImageMessage)
@@ -115,7 +111,7 @@ def handle_message(event):
     # get message_content
     msgId = event.message.id
     message_content = line_bot_api.get_message_content(msgId)
-    
+
     # upload s3
     response  = img_s3.upload_to_s3( message_content.content, bucket )
     print( response )
