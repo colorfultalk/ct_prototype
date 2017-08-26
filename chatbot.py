@@ -89,9 +89,9 @@ def sequence_is_not_initialized( session ):
         print( 'sequence initialized' )
         return True
     else:
-        print( 'already started' )
         return False
 
+# text handler
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     text    = event.message.text
@@ -129,7 +129,9 @@ def handle_message(event):
         # upload s3
         response  = img_s3.upload_to_s3( message_content.content, bucket )
         print( response )
-        # set next input
+
+        # set input value to session
+        session['IMAGE'] = 'http://test.com'
         session['next_input'] = DESCRIPTION
 
     else:
@@ -138,6 +140,30 @@ def handle_message(event):
             event.reply_token,
             TextSendMessage(text='your input is wrong, please retry!'))
 
+
+# location handler
+@handler.add(MessageEvent, message=LocationMessage)
+def handle_message(event):
+    session  = getattr(g, 'session', None)
+    location = event.message.address
+
+    if sequence_is_not_initialized( session ):
+        # session initialized
+        pass
+
+    elif session.get('next_input') == LOCATION:
+        # location
+        print( location )
+
+        # set input value
+        session['LOCATION']   = location
+        session['next_input'] = ALL_SET
+
+    else:
+        # when get wrong input value
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text='your input is wrong, please retry!'))
 
 if __name__ == "__main__":
     app.run()
