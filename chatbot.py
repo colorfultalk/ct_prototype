@@ -87,6 +87,7 @@ def sequence_is_not_started( session ):
     if 'next_input' not in session:
         # set first input
         session['next_input'] = IMAGE
+        print( 'sequence initialized' )
         return True
     else:
         return False
