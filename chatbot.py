@@ -97,7 +97,11 @@ def handle_message(event):
     text    = event.message.text
     session = getattr(g, 'session', None)
 
-    if sequence_is_not_started:
+    if text == 'claer':
+        # clear session key
+        del session['next_input']
+
+    elif sequence_is_not_started:
         # sequence initialized
         pass
 
