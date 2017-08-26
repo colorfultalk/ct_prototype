@@ -20,9 +20,9 @@ def retrieve_image_from_content( msg_content , save_img_size = (1000, 680) ):
     pil_img = Image.open( img_bin )
 
     # resize
-    pil_img.thumbnail(saveImgSize, Image.ANTIALIAS)
-    horizontal_padding = (saveImgSize[0] - pil_img.size[0]) / 2
-    vertical_padding = (saveImgSize[1] - pil_img.size[1]) / 2
+    pil_img.thumbnail(save_img_size, Image.ANTIALIAS)
+    horizontal_padding = (save_img_size[0] - pil_img.size[0]) / 2
+    vertical_padding = (save_img_size[1] - pil_img.size[1]) / 2
     pil_img = pil_img.crop(
             (
                 -horizontal_padding,
