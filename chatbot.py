@@ -115,7 +115,7 @@ def handle_message(event):
     # get message_content
     msgId = event.message.id
     message_content = line_bot_api.get_message_content(msgId)
-
+    
     # upload s3
     response  = img_s3.upload_to_s3( message_content.content, bucket )
     print( response )
