@@ -119,7 +119,6 @@ def handle_message(event):
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_message(event):
 
-    saveImgSize = (1000, 680)
 
     msgId = event.message.id
     message_content = line_bot_api.get_message_content(msgId)
@@ -128,7 +127,20 @@ def handle_message(event):
     # get image that user sent
     content = message_content.content
     img_bin = io.BytesIO(content)
-    pil_img = Image.open( img_bin ).resize( saveImgSize )
+    pil_img = Image.open( img_bin )
+
+    saveImgSize = (1000, 680)
+    pil_img.thumbnail(saveImgSize, Image.ANTIALIAS)
+    horizontal_padding = (saveImgSize[0] - pil_img.size[0]) / 2
+    vertical_padding = (saveImgSize[1] - pil_img.size[1]) / 2
+    pil_img = pil_img.crop(
+        (
+            -horizontal_padding,
+            -vertical_padding,
+            pil_img.size[0] + horizontal_padding,
+            pil_img.size[1] + vertical_padding
+        )
+    )
     print( pil_img )
 
     # upload s3
