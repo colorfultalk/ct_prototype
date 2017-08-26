@@ -72,7 +72,6 @@ def callback():
     except InvalidSignatureError:
         abort(400)
 
-
     return 'OK'
 
 @app.after_request
@@ -84,7 +83,7 @@ def after_request(response):
     return response
 
 def sequence_is_not_initialized( session ):
-    if 'next_input' not in session or session.get('next_input') == "":
+    if 'next_input' not in session:
         # set first input
         session['next_input'] = IMAGE
         print( 'sequence initialized' )
@@ -103,7 +102,7 @@ def handle_message(event):
         del session['next_input']
         print( 'session cleared' )
 
-    elif sequence_is_not_initialized:
+    elif sequence_is_not_initialized( session ):
         # sequence initialized
         pass
 
@@ -126,7 +125,7 @@ def handle_message(event):
     msgId = event.message.id
     message_content = line_bot_api.get_message_content(msgId)
 
-    if sequence_is_not_initialized or session.get('next_input') == IMAGE:
+    if sequence_is_not_initialized( session ) or session.get('next_input') == IMAGE:
         # upload s3
         response  = img_s3.upload_to_s3( message_content.content, bucket )
         print( response )
