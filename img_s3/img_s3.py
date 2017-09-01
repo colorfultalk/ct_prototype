@@ -7,6 +7,7 @@ import random
 # s3 client
 import boto3
 s3 = boto3.client('s3')
+IMG_EXPIREIN = 3600
 
 def random_string(length, seq='0123456789abcdefghijklmnopqrstuvwxyz'):
     sr = random.SystemRandom()
@@ -53,7 +54,7 @@ def upload_to_s3( msg_content, s3_bucket, obj_key_name = random_string(15) ):
     presigned_url = s3.generate_presigned_url(
             ClientMethod = 'get_object',
             Params = {'Bucket' : s3_bucket.name, 'Key' : key},
-            ExpiresIn = 3600,
+            ExpiresIn = IMG_EXPIREIN,
             HttpMethod = 'GET'
             )
 
