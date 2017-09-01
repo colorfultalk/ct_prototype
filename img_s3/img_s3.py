@@ -52,7 +52,7 @@ def upload_to_s3( msg_content, s3_bucket, obj_key_name = random_string(15) ):
     # get access url
     presigned_url = s3.generate_presigned_url(
             ClientMethod = 'get_object',
-            Params = {'Bucket' : s3_bucket, 'Key' : key},
+            Params = {'Bucket' : s3_bucket.name, 'Key' : key},
             ExpiresIn = 3600,
             HttpMethod = 'GET'
             )
