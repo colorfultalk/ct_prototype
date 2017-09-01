@@ -186,6 +186,7 @@ def handle_message(event):
         # set input value
         session['LOCATION']   = location
         session['next_input'] = ALL_SET
+        basic_reply( event.reply_token, session.get('next_input') )
 
     else:
         # when get wrong input value
