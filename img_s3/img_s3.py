@@ -4,6 +4,10 @@ from io import BytesIO
 from PIL import Image
 import random
 
+# s3 client
+import boto3
+s3 = boto3.client('s3')
+
 def random_string(length, seq='0123456789abcdefghijklmnopqrstuvwxyz'):
     sr = random.SystemRandom()
     return ''.join([sr.choice(seq) for i in range(length)])
@@ -42,7 +46,15 @@ def upload_to_s3( msg_content, s3_bucket, obj_key_name = random_string(15) ):
     obj = s3_bucket.Object( key )
     response = obj.put(
     Body = out.getvalue(),
-        ContentType = 'image/png'
+        ContentType = 'image/jpeg'
     )
 
-    return( response )
+    # get access url
+    presigned_url = s3.generate_presigned_url(
+            ClientMethod = 'get_object',
+            Params = {'Bucket' : s3_bucket, 'Key' : key},
+            ExpiresIn = 3600,
+            HttpMethod = 'GET'
+            )
+
+    return( presigned_url )
