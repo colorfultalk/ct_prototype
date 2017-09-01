@@ -141,11 +141,11 @@ def handle_message(event):
 
     if sequence_is_not_initialized( session ) or session.get('next_input') == IMAGE:
         # upload s3
-        response  = img_s3.upload_to_s3( message_content.content, bucket )
-        print( response )
+        presigned_url  = img_s3.upload_to_s3( message_content.content, bucket )
+        print( presigned_url )
 
         # set input value to session
-        session['IMAGE'] = 'http://test.com'
+        session['IMAGE'] = presigned_url
         session['next_input'] = DESCRIPTION
         basic_reply( event.reply_token, session.get('next_input') )
 
