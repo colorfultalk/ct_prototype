@@ -25,6 +25,9 @@ from linebot.models import (
 )
 from botsession import BotSessionInterface
 
+# original template message wrapper
+from template_wrapper.button import generate_button_message
+
 app = Flask(__name__)
 botSessionInterface = BotSessionInterface()
 
@@ -92,17 +95,27 @@ def sequence_is_not_initialized( session ):
         return False
 
 def basic_reply( reply_token, next_input ):
+    session = getattr(g, 'session', None)
+
     # set reply_text
     if next_input == ALL_SET:
-        reply_text = 'input sequence completed !'
+        # reply_text = 'input sequence completed !'
+        button_message = generate_button_message(
+                    text = session.get('DESCRIPTION'),
+                    thumbnail_image_url = session.get('IMAGE')
+                )
+        # reply
+        line_bot_api.reply_message(
+            reply_token,
+            button_message
+        )
     else:
         reply_text = 'please input ' + next_input + ' next !'
-
-    # reply
-    line_bot_api.reply_message(
-        reply_token,
-        TextSendMessage( text = reply_text )
-    )
+        # reply
+        line_bot_api.reply_message(
+            reply_token,
+            TextSendMessage( text = reply_text )
+        )
 
 # text handler
 @handler.add(MessageEvent, message=TextMessage)
