@@ -4,3 +4,8 @@ IMAGE       = 'IMAGE'
 DESCRIPTION = 'DESCRIPTION'
 LOCATION    = 'LOCATION'
 ALL_SET     = 'ALL_SET'
+
+# set constants for test
+APPNAME = 'still-refuge-57534'
+USERNAME = 'u19022'
+PASSWORD = 'naistnaist'
