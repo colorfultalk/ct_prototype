@@ -14,6 +14,9 @@ bucketName = 'ct-prototype'
 s3 = boto3.resource('s3')
 bucket = s3.Bucket(bucketName)
 
+# for api_call
+from api_call import api_call
+
 from linebot import (
     LineBotApi, WebhookHandler, WebhookParser
 )
