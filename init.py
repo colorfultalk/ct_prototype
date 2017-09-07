@@ -4,6 +4,7 @@ IMAGE       = 'IMAGE'
 DESCRIPTION = 'DESCRIPTION'
 LOCATION    = 'LOCATION'
 ALL_SET     = 'ALL_SET'
+START       = 'START'
 
 # set constants for test
 APPNAME = 'still-refuge-57534'
