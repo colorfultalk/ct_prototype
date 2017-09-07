@@ -10,9 +10,9 @@ from img_s3 import img_s3
 
 # for handling aws s3
 import boto3
-bucketName = 'ct-prototype'
+# BUCKET_NAME is defined in init.py
 s3 = boto3.resource('s3')
-bucket = s3.Bucket(bucketName)
+bucket = s3.Bucket(BUCKET_NAME)
 
 # for api_call
 import api_call

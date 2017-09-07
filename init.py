@@ -10,3 +10,6 @@ START       = 'START'
 APPNAME = 'still-refuge-57534'
 USERNAME = 'u19022'
 PASSWORD = 'naistnaist'
+
+# set aws s3 bucket name
+BUCKET_NAME = 'ct-prototype'
