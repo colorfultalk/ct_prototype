@@ -144,9 +144,7 @@ def handle_message(event):
 
     else:
         # when get wrong input value
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text='your input is wrong, please retry!'))
+        basic_reply( event.reply_token, session.get('next_input') )
 
 # image handler
 @handler.add(MessageEvent, message=ImageMessage)
@@ -167,10 +165,7 @@ def handle_message(event):
 
     else:
         # when get wrong input value
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text='your input is wrong, please retry!'))
-
+        basic_reply( event.reply_token, session.get('next_input') )
 
 # location handler
 @handler.add(MessageEvent, message=LocationMessage)
@@ -193,9 +188,7 @@ def handle_message(event):
 
     else:
         # when get wrong input value
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text='your input is wrong, please retry!'))
+        basic_reply( event.reply_token, session.get('next_input') )
 
 if __name__ == "__main__":
     app.run()
