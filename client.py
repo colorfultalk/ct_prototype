@@ -65,6 +65,9 @@ class Client:
         return response
 
     def verify_host(self, params):
+        """
+        CALL api/hosts/${pk}
+        """
         pk         = params["pk"]
         verifyPass = params["verifyPass"]
         lineId     = params["lineId"]
@@ -134,7 +137,7 @@ class Client:
 
     def retrieve_items(self, parmas):
         """
-        CALL /api/items/${pk}
+        CALL /api/searchitems
         """
         latitude  = params["latitude"]
         longitude = params["longitude"]
@@ -154,7 +157,7 @@ class Client:
 
     def register_guest_item(self, params):
         """
-        CALL /api/guestitems
+        CALL /api/guest-items
         """
         # extract parameters
         guest       = params['guest']
@@ -182,7 +185,7 @@ class Client:
 
     def retrieve_guest_items(self, parmas):
         """
-        CALL /api/guestitems/${pk}
+        CALL /api/guest-searchitems
         """
         latitude  = params["latitude"]
         longitude = params["longitude"]
