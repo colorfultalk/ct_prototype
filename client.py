@@ -26,7 +26,7 @@ class Client:
         token = response.json()['token']
         return token
 
-    def register_host(params, client_params):
+    def register_host(params):
         """
         CALL api/hosts
         """
@@ -35,7 +35,7 @@ class Client:
         longitude = params["longitude"]
         latitude  = params["latitude"]
 
-        token   = get_token(client_params)
+        token   = get_token()
         url     = base_url + "api/hosts/"
         headers = { "Content-Type" : "application/json" ,
                     "Authorization" : 'JWT {}'.format(token) }
@@ -187,7 +187,7 @@ class Client:
         latitude  = params["latitude"]
         longitude = params["longitude"]
         # get jwt token
-        token = get_token(client_params)
+        token = get_token()
 
         url      = base_url + "api/guest-searchitems/"
         headers  = { "Content-Type" : "application/json" ,
