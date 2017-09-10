@@ -43,7 +43,7 @@ class RegisterFlow:
             reply_msg
         )
 
-    def handle_text_message( event, session ):
+    def handle_text_message( self, event, session ):
         text = event.message.text
 
         if sequence_is_not_initialized( session ):
@@ -61,7 +61,7 @@ class RegisterFlow:
             # when get wrong input value
             basic_reply( event.reply_token, session.get('next_input') )
 
-    def handle_image_message( event, session ):
+    def handle_image_message( self, event, session ):
         msgId = event.message.id
         message_content = line_bot_api.get_message_content(msgId)
 
@@ -79,7 +79,7 @@ class RegisterFlow:
             # when get wrong input value
             basic_reply( event.reply_token, session.get('next_input') )
 
-    def handle_location_message( event, session ):
+    def handle_location_message( self, event, session ):
         location = event.message.address
 
         if sequence_is_not_initialized( session ):
