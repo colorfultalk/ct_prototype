@@ -90,10 +90,32 @@ def handle_message(event):
 def handle_message(event):
     session = getattr(g, 'session', None)
 
+    if 'flow' not in session:
+        # when flow is not set
+        print( 'WARNING : no flow is selected' )
+    else:
+        # when flow is set already
+        flow = session.get('flow')
+        if flow == REGISTER:
+            register_flow.handle_image_message( event, session )
+        else:
+            print( 'ERROR : no flow matched' )
+
 # location handler
 @handler.add(MessageEvent, message=LocationMessage)
 def handle_message(event):
     session = getattr(g, 'session', None)
+
+    if 'flow' not in session:
+        # when flow is not set
+        print( 'WARNING : no flow is selected' )
+    else:
+        # when flow is set already
+        flow = session.get('flow')
+        if flow == REGISTER:
+            register_flow.handle_location_message( event, session )
+        else:
+            print( 'ERROR : no flow matched' )
 
 if __name__ == "__main__":
     app.run()
