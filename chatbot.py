@@ -11,6 +11,7 @@ from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, ImageMessage, LocationMessage
 )
 from botsession import BotSessionInterface
+from init import * # set constants
 
 app = Flask(__name__)
 botSessionInterface = BotSessionInterface()
@@ -69,7 +70,7 @@ def after_request(response):
 def handle_message(event):
     session = getattr(g, 'session', None)
     text    = event.message.text
-    
+
     if 'flow' not in session:
         # when flow is not set
         if text == 'register' :
