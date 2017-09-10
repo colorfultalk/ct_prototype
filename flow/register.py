@@ -67,7 +67,7 @@ class RegisterFlow:
 
     def handle_image_message( self, event, session ):
         msgId = event.message.id
-        message_content = line_bot_api.get_message_content(msgId)
+        message_content = self.line_bot_api.get_message_content(msgId)
 
         if self.sequence_is_not_initialized( session ) or session.get('next_input') == IMAGE:
             # upload s3
