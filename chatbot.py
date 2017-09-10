@@ -71,17 +71,31 @@ def handle_message(event):
     session = getattr(g, 'session', None)
     text    = event.message.text
 
-    if 'flow' not in session:
+    if text == 'clear':
+        for key in session.keys():
+            session.pop[key]
+        print( 'session cleared' )
+
+    elif 'flow' not in session:
         # when flow is not set
         if text == 'register' :
             session['flow'] = REGISTER
+        elif text == 'edit' :
+            # TODO : implement edit mode function
+        elif text == 'verify' :
+            # TODO : implement verify mode function
         else:
-            print( 'WARNING : no flow is selected' )
+            print( 'WARNING : no flow selected' )
+
     else:
         # when flow is set already
         flow = session.get('flow')
         if flow == REGISTER:
             register_flow.handle_text_message( event, session )
+        elif flow == EDIT:
+            # TODO : implement edit mode function
+        elif flow == VERIFY:
+            # TODO : implement verify mode function
         else:
             print( 'ERROR : no flow matched' )
 
@@ -92,12 +106,20 @@ def handle_message(event):
 
     if 'flow' not in session:
         # when flow is not set
-        print( 'WARNING : no flow is selected' )
+        print( 'WARNING : no flow selected' )
+
     else:
         # when flow is set already
         flow = session.get('flow')
         if flow == REGISTER:
             register_flow.handle_image_message( event, session )
+
+        elif flow == EDIT:
+            # TODO : implement edit mode function
+
+        elif flow == VERIFY:
+            # TODO : implement verify mode function
+
         else:
             print( 'ERROR : no flow matched' )
 
@@ -108,12 +130,19 @@ def handle_message(event):
 
     if 'flow' not in session:
         # when flow is not set
-        print( 'WARNING : no flow is selected' )
+        print( 'WARNING : no flow selected' )
     else:
         # when flow is set already
         flow = session.get('flow')
         if flow == REGISTER:
             register_flow.handle_location_message( event, session )
+
+        elif flow == EDIT:
+            # TODO : implement edit mode function
+
+        elif flow == VERIFY:
+            # TODO : implement verify mode function
+            
         else:
             print( 'ERROR : no flow matched' )
 

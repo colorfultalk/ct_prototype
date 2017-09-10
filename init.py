@@ -1,6 +1,8 @@
 # set constant values
 # To check current flow
 REGISTER = 'REGISTER'
+EDIT     = 'EDIT'
+VERIFY   = 'VERIFY'
 
 # To check which phase a user is on
 IMAGE       = 'IMAGE'
