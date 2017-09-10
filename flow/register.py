@@ -6,6 +6,10 @@ s3 = boto3.resource('s3')
 bucket = s3.Bucket(BUCKET_NAME) # BUCKET_NAME is defined in init.py
 from template_wrapper.button import generate_button_message # original template message wrapper
 
+from linebot.models import (
+    MessageEvent, TextMessage, TextSendMessage, ImageMessage, LocationMessage
+)
+
 class RegisterFlow:
 
     def __init__(self, line_bot_api):
