@@ -11,7 +11,7 @@ class RegisterFlow:
     def __init__(self, line_bot_api):
         self.line_bot_api = line_bot_api
 
-    def sequence_is_not_initialized( session ):
+    def sequence_is_not_initialized( self, session ):
         if 'next_input' not in session:
             # set first input
             session['next_input'] = IMAGE
@@ -20,7 +20,7 @@ class RegisterFlow:
         else:
             return False
 
-    def basic_reply( reply_token, next_input ):
+    def basic_reply( self, reply_token, next_input ):
         session = getattr(g, 'session', None)
 
         # set reply_text
