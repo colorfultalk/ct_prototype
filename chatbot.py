@@ -73,7 +73,7 @@ def handle_message(event):
 
     if text == 'clear':
         for key in session.keys():
-            session.pop[key]
+            del session[key]
         print( 'session cleared' )
 
     elif 'flow' not in session:
