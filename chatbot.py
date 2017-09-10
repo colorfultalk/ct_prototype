@@ -72,7 +72,7 @@ def handle_message(event):
     text    = event.message.text
 
     if text == 'clear':
-        for key in session.keys():
+        for key in list(session):
             session.pop(key, None)
         print( 'session cleared' )
 
