@@ -1,4 +1,7 @@
 # set constant values
+# To check current flow
+REGISTER = 'REGISTER'
+
 # To check which phase a user is on
 IMAGE       = 'IMAGE'
 DESCRIPTION = 'DESCRIPTION'
