@@ -82,8 +82,10 @@ def handle_message(event):
             session['flow'] = REGISTER
         elif text == 'edit' :
             # TODO : implement edit mode function
+            pass
         elif text == 'verify' :
             # TODO : implement verify mode function
+            pass
         else:
             print( 'WARNING : no flow selected' )
 
@@ -94,8 +96,10 @@ def handle_message(event):
             register_flow.handle_text_message( event, session )
         elif flow == EDIT:
             # TODO : implement edit mode function
+            pass
         elif flow == VERIFY:
             # TODO : implement verify mode function
+            pass
         else:
             print( 'ERROR : no flow matched' )
 
@@ -116,9 +120,11 @@ def handle_message(event):
 
         elif flow == EDIT:
             # TODO : implement edit mode function
+            pass
 
         elif flow == VERIFY:
             # TODO : implement verify mode function
+            pass
 
         else:
             print( 'ERROR : no flow matched' )
@@ -139,10 +145,12 @@ def handle_message(event):
 
         elif flow == EDIT:
             # TODO : implement edit mode function
+            pass
 
         elif flow == VERIFY:
             # TODO : implement verify mode function
-            
+            pass
+
         else:
             print( 'ERROR : no flow matched' )
 
