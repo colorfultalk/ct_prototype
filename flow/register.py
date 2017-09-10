@@ -46,7 +46,7 @@ class RegisterFlow:
     def handle_text_message( self, event, session ):
         text = event.message.text
 
-        if sequence_is_not_initialized( session ):
+        if self.sequence_is_not_initialized( session ):
             # sequence initialized
             pass
 
@@ -55,17 +55,17 @@ class RegisterFlow:
             session['DESCRIPTION'] = text
             # set next input
             session['next_input']  = LOCATION
-            basic_reply( event.reply_token, session.get('next_input') )
+            self.basic_reply( event.reply_token, session.get('next_input') )
 
         else:
             # when get wrong input value
-            basic_reply( event.reply_token, session.get('next_input') )
+            self.basic_reply( event.reply_token, session.get('next_input') )
 
     def handle_image_message( self, event, session ):
         msgId = event.message.id
         message_content = line_bot_api.get_message_content(msgId)
 
-        if sequence_is_not_initialized( session ) or session.get('next_input') == IMAGE:
+        if self.sequence_is_not_initialized( session ) or session.get('next_input') == IMAGE:
             # upload s3
             presigned_url  = img_s3.upload_to_s3( message_content.content, bucket )
             print( presigned_url )
@@ -73,16 +73,16 @@ class RegisterFlow:
             # set input value to session
             session['IMAGE'] = presigned_url
             session['next_input'] = DESCRIPTION
-            basic_reply( event.reply_token, session.get('next_input') )
+            self.basic_reply( event.reply_token, session.get('next_input') )
 
         else:
             # when get wrong input value
-            basic_reply( event.reply_token, session.get('next_input') )
+            self.basic_reply( event.reply_token, session.get('next_input') )
 
     def handle_location_message( self, event, session ):
         location = event.message.address
 
-        if sequence_is_not_initialized( session ):
+        if self.sequence_is_not_initialized( session ):
             # session initialized
             pass
 
@@ -93,8 +93,8 @@ class RegisterFlow:
             # set input value
             session['LOCATION']   = location
             session['next_input'] = ALL_SET
-            basic_reply( event.reply_token, session.get('next_input') )
+            self.basic_reply( event.reply_token, session.get('next_input') )
 
         else:
             # when get wrong input value
-            basic_reply( event.reply_token, session.get('next_input') )
+            self.basic_reply( event.reply_token, session.get('next_input') )
