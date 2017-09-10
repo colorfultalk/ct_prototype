@@ -16,5 +16,8 @@ APPNAME = 'still-refuge-57534'
 USERNAME = 'u19022'
 PASSWORD = 'naistnaist'
 
-# set aws s3 bucket name
+# set aws s3 bucket
+import boto3 # for handling aws s3
 BUCKET_NAME = 'ct-prototype'
+s3          = boto3.resource('s3')
+bucket      = s3.Bucket(BUCKET_NAME) # BUCKET_NAME is defined in init.py

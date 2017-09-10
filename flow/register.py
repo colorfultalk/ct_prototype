@@ -1,9 +1,6 @@
 from flask import Flask, request, abort, g
 from init import *          # get constants
 from img_s3 import img_s3   # for handling image
-import boto3                # for handling aws s3
-s3 = boto3.resource('s3')
-bucket = s3.Bucket(BUCKET_NAME) # BUCKET_NAME is defined in init.py
 from template_wrapper.button import generate_button_message # original template message wrapper
 
 from linebot.models import (
@@ -15,14 +12,11 @@ class RegisterFlow:
     def __init__(self, line_bot_api):
         self.line_bot_api = line_bot_api
 
-    def sequence_is_not_initialized( self, session ):
-        if 'next_input' not in session:
-            # set first input
-            session['next_input'] = IMAGE
-            print( 'sequence initialized' )
+    # session initializer
+    def initialize( self, session ):
+            session['next_input'] = IMAGE # set first input
+            print( 'session initialized' )
             return True
-        else:
-            return False
 
     def basic_reply( self, reply_token, next_input ):
         session = getattr(g, 'session', None)
@@ -50,9 +44,9 @@ class RegisterFlow:
     def handle_text_message( self, event, session ):
         text = event.message.text
 
-        if self.sequence_is_not_initialized( session ):
-            # sequence initialized
-            pass
+        # when session is not initialized
+        if 'next_input' not in session:
+            self.initialize( session )
 
         elif session.get('next_input') == DESCRIPTION:
             # set input value to session
@@ -69,7 +63,8 @@ class RegisterFlow:
         msgId = event.message.id
         message_content = self.line_bot_api.get_message_content(msgId)
 
-        if self.sequence_is_not_initialized( session ) or session.get('next_input') == IMAGE:
+        # when session is not initialized
+        if 'next_input' not in session or session.get('next_input') == IMAGE:
             # upload s3
             presigned_url  = img_s3.upload_to_s3( message_content.content, bucket )
             print( presigned_url )
@@ -86,9 +81,9 @@ class RegisterFlow:
     def handle_location_message( self, event, session ):
         location = event.message.address
 
-        if self.sequence_is_not_initialized( session ):
-            # session initialized
-            pass
+        # when session is not initialized
+        if 'next_input' not in session:
+            self.initialize( session )
 
         elif session.get('next_input') == LOCATION:
             # location
