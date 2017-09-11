@@ -92,6 +92,8 @@ class RegisterFlow:
             # set input value
             session['LOCATION']   = location
             session['next_input'] = ALL_SET
+            # reset flow value
+            session.pop('flow')
             self.basic_reply( event.reply_token, session.get('next_input') )
 
         else:
