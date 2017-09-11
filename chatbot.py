@@ -1,22 +1,6 @@
 from flask import Flask, request, abort, g
 import os
 import sys
-
-# get constants
-from init import *
-
-# for handling image
-from img_s3 import img_s3
-
-# for handling aws s3
-import boto3
-# BUCKET_NAME is defined in init.py
-s3 = boto3.resource('s3')
-bucket = s3.Bucket(BUCKET_NAME)
-
-# for api_call
-import api_call
-
 from linebot import (
     LineBotApi, WebhookHandler, WebhookParser
 )
@@ -27,9 +11,7 @@ from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, ImageMessage, LocationMessage
 )
 from botsession import BotSessionInterface
-
-# original template message wrapper
-from template_wrapper.button import generate_button_message
+from init import * # set constants
 
 app = Flask(__name__)
 botSessionInterface = BotSessionInterface()
@@ -48,15 +30,10 @@ line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
 parser  = WebhookParser(channel_secret)
 
-# function for create tmp dir for download content
-def make_static_tmp_dir():
-    try:
-        os.makedirs(static_tmp_path)
-    except OSError as exc:
-        if exc.errno == errno.EEXIST and os.path.isdir(static_tmp_path):
-            pass
-        else:
-            raise
+# import all flow
+from flow.register import RegisterFlow
+# initialize all flow
+register_flow = RegisterFlow( line_bot_api )
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -88,107 +65,94 @@ def after_request(response):
     botSessionInterface.save_session(app, session, response)
     return response
 
-def sequence_is_not_initialized( session ):
-    if 'next_input' not in session:
-        # set first input
-        session['next_input'] = IMAGE
-        print( 'sequence initialized' )
-        return True
-    else:
-        return False
-
-def basic_reply( reply_token, next_input ):
-    session = getattr(g, 'session', None)
-
-    # set reply_text
-    if next_input == START:
-        reply_text = 'sequence start'
-        reply_msg  = TextSendMessage( text = reply_text )
-    elif next_input == ALL_SET:
-        # if everything set then display demo
-        reply_msg = generate_button_message(
-                    text = session.get('DESCRIPTION'),
-                    thumbnail_image_url = session.get('IMAGE')
-                )
-    else:
-        reply_text = 'please input ' + next_input + ' next !'
-        reply_msg  = TextSendMessage( text = reply_text )
-
-    # reply
-    line_bot_api.reply_message(
-        reply_token,
-        reply_msg
-    )
-
 # text handler
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    text    = event.message.text
     session = getattr(g, 'session', None)
+    text    = event.message.text
 
     if text == 'clear':
-        # clear session key
-        del session['next_input']
+        for key in list(session):
+            session.pop(key, None)
         print( 'session cleared' )
 
-    elif sequence_is_not_initialized( session ):
-        # sequence initialized
-        pass
-
-    elif session.get('next_input') == DESCRIPTION:
-        # set input value to session
-        session['DESCRIPTION'] = text
-        # set next input
-        session['next_input']  = LOCATION
-        basic_reply( event.reply_token, session.get('next_input') )
+    elif 'flow' not in session:
+        # when flow is not set
+        if text == 'register' :
+            session['flow'] = REGISTER
+        elif text == 'edit' :
+            # TODO : implement edit mode function
+            pass
+        elif text == 'verify' :
+            # TODO : implement verify mode function
+            pass
+        else:
+            print( 'WARNING : no flow selected' )
 
     else:
-        # when get wrong input value
-        basic_reply( event.reply_token, session.get('next_input') )
+        # when flow is set already
+        flow = session.get('flow')
+        if flow == REGISTER:
+            register_flow.handle_text_message( event, session )
+        elif flow == EDIT:
+            # TODO : implement edit mode function
+            pass
+        elif flow == VERIFY:
+            # TODO : implement verify mode function
+            pass
+        else:
+            print( 'ERROR : no flow matched' )
 
 # image handler
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_message(event):
     session = getattr(g, 'session', None)
-    msgId = event.message.id
-    message_content = line_bot_api.get_message_content(msgId)
 
-    if sequence_is_not_initialized( session ) or session.get('next_input') == IMAGE:
-        # upload s3
-        presigned_url  = img_s3.upload_to_s3( message_content.content, bucket )
-        print( presigned_url )
-
-        # set input value to session
-        session['IMAGE'] = presigned_url
-        session['next_input'] = DESCRIPTION
-        basic_reply( event.reply_token, session.get('next_input') )
+    if 'flow' not in session:
+        # when flow is not set
+        print( 'WARNING : no flow selected' )
 
     else:
-        # when get wrong input value
-        basic_reply( event.reply_token, session.get('next_input') )
+        # when flow is set already
+        flow = session.get('flow')
+        if flow == REGISTER:
+            register_flow.handle_image_message( event, session )
+
+        elif flow == EDIT:
+            # TODO : implement edit mode function
+            pass
+
+        elif flow == VERIFY:
+            # TODO : implement verify mode function
+            pass
+
+        else:
+            print( 'ERROR : no flow matched' )
 
 # location handler
 @handler.add(MessageEvent, message=LocationMessage)
 def handle_message(event):
-    session  = getattr(g, 'session', None)
-    location = event.message.address
+    session = getattr(g, 'session', None)
 
-    if sequence_is_not_initialized( session ):
-        # session initialized
-        pass
-
-    elif session.get('next_input') == LOCATION:
-        # location
-        print( location )
-
-        # set input value
-        session['LOCATION']   = location
-        session['next_input'] = ALL_SET
-        basic_reply( event.reply_token, session.get('next_input') )
-
+    if 'flow' not in session:
+        # when flow is not set
+        print( 'WARNING : no flow selected' )
     else:
-        # when get wrong input value
-        basic_reply( event.reply_token, session.get('next_input') )
+        # when flow is set already
+        flow = session.get('flow')
+        if flow == REGISTER:
+            register_flow.handle_location_message( event, session )
+
+        elif flow == EDIT:
+            # TODO : implement edit mode function
+            pass
+
+        elif flow == VERIFY:
+            # TODO : implement verify mode function
+            pass
+
+        else:
+            print( 'ERROR : no flow matched' )
 
 if __name__ == "__main__":
     app.run()
