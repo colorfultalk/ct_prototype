@@ -32,8 +32,10 @@ parser  = WebhookParser(channel_secret)
 
 # import all flow
 from flow.register import RegisterFlow
+from flow.edit import EditFlow
 # initialize all flow
 register_flow = RegisterFlow( line_bot_api )
+edit_flow = EditFlow( line_bot_api )
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -81,8 +83,8 @@ def handle_message(event):
         if text == 'register' :
             session['flow'] = REGISTER
         elif text == 'edit' :
-            # TODO : implement edit mode function
-            pass
+            session['flow'] = EDIT
+            edit_flow.handle_text_message( event, session )
         elif text == 'verify' :
             # TODO : implement verify mode function
             pass
@@ -95,7 +97,7 @@ def handle_message(event):
         if flow == REGISTER:
             register_flow.handle_text_message( event, session )
         elif flow == EDIT:
-            # TODO : implement edit mode function
+            edit_flow.handle_text_message( event, session )
             pass
         elif flow == VERIFY:
             # TODO : implement verify mode function
@@ -125,8 +127,7 @@ def handle_message(event):
             register_flow.handle_image_message( event, session )
 
         elif flow == EDIT:
-            # TODO : implement edit mode function
-            pass
+            edit_flow.handle_image_message( event, session )
 
         elif flow == VERIFY:
             # TODO : implement verify mode function
@@ -150,8 +151,7 @@ def handle_message(event):
             register_flow.handle_location_message( event, session )
 
         elif flow == EDIT:
-            # TODO : implement edit mode function
-            pass
+            edit_flow.handle_location_message( event, session )
 
         elif flow == VERIFY:
             # TODO : implement verify mode function
