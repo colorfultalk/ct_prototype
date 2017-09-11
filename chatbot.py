@@ -111,6 +111,12 @@ def handle_message(event):
     if 'flow' not in session:
         # when flow is not set
         print( 'WARNING : no flow selected' )
+        reply_text = "Select a flow\n register / edit / verify"
+        reply_msg  = TextSendMessage(text=reply_text)
+        self.line_bot_api.reply_message(
+            reply_token,
+            reply_msg
+        )
 
     else:
         # when flow is set already
