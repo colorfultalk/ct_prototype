@@ -46,7 +46,7 @@ def upload_to_s3( msg_content, s3_bucket, obj_key_name = random_string(15) ):
     key = 'tmp/' + obj_key_name + '.jpg'
     obj = s3_bucket.Object( key )
     response = obj.put(
-    Body = out.getvalue(),
+        Body = out.getvalue(),
         ContentType = 'image/jpeg'
     )
 
