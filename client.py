@@ -50,20 +50,6 @@ class Client:
         response = requests.post(url, data, headers=headers)
         return response
 
-    def retrieve_host(self, params):
-        """
-        CALL api/hosts/${pk}
-        """
-        lineId = params["lineId"]
-        # get jwt token
-        token   = self.get_token()
-        url     = base_url + "api/hosts/" + lineId + "/"
-        headers = { "Content-Type" : "application/json" ,
-                    "Authorization" : 'JWT {}'.format(token) }
-        # check given lineId is already registered or not
-        response = requests.get(url, headers=headers)
-        return response
-
     def verify_host(self, params):
         """
         CALL api/hosts/${pk}
@@ -76,6 +62,20 @@ class Client:
         url      = base_url + "api/hosts/" + str(pk) + "/"
         obj      = {"verifyPass" : verifyPass, "lineId": lineId}
         response = requests.post(url, headers=headers)
+        return response
+
+    def retrieve_host(self, params):
+        """
+        CALL api/hosts/${pk}
+        """
+        lineId = params["lineId"]
+        # get jwt token
+        token   = self.get_token()
+        url     = base_url + "api/hosts/" + lineId + "/"
+        headers = { "Content-Type" : "application/json" ,
+                    "Authorization" : 'JWT {}'.format(token) }
+        # check given lineId is already registered or not
+        response = requests.get(url, headers=headers)
         return response
 
     def retrieve_guest(self, params):
