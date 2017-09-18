@@ -109,7 +109,7 @@ class Client:
         response = requests.post(url, data, headers = headers)
         return response
 
-    def register_item(self, parmas):
+    def register_item(self, params):
         """
         CALL /api/items
         """
@@ -183,7 +183,7 @@ class Client:
         response = requests.post(url, data, headers = headers)
         return response
 
-    def retrieve_guest_items(self, parmas):
+    def retrieve_guest_items(self, params):
         """
         CALL /api/guest-searchitems
         """
