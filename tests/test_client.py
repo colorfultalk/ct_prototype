@@ -43,7 +43,7 @@ class TestClient(unittest.TestCase):
         response = self.c.retrieve_guest(params)
         self.assertEqual(response.status_code, 200)
 
-    def test_register_item(self, parmas):
+    def test_register_item(self):
         """
         CALL /api/items
         """
@@ -62,7 +62,7 @@ class TestClient(unittest.TestCase):
         response = self.c.register_item(params)
         self.assertEqual(response.status_code, 201)
 
-    def test_retrieve_items(self, parmas):
+    def test_retrieve_items(self):
         latitude  = 123.123
         longitude = 54.432
         params    = {
@@ -72,7 +72,7 @@ class TestClient(unittest.TestCase):
         response = self.c.retrieve_items(params)
         self.assertEqual(response.status_code, 200)
 
-    def register_guest_item(self, params):
+    def test_register_guest_item(self):
         guest       = 1
         description = "Let it go"
         imgUrl      = "https://hogehoge.com/hogehgoe.png"
@@ -88,7 +88,7 @@ class TestClient(unittest.TestCase):
         response = self.c.register_guest_item(params)
         self.assertEqual(response.status_code, 201)
 
-    def test_retrieve_guest_items(self, parmas):
+    def test_retrieve_guest_items(self):
         latitude  = 123.123
         longitude = 54.432
         params    = {
