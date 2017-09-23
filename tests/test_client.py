@@ -2,11 +2,12 @@ import unittest
 import sys, os
 sys.path.append(os.pardir)
 from client import Client
+from init import *
 
 class TestClient(unittest.TestCase):
     def setUp(self):
-        username  = 'my_admin'
-        password  = 'mypassword'
+        username  = USERNAME
+        password  = PASSWORD
         self.c = Client(username, password)
 
     def test_get_token(self):
@@ -62,15 +63,15 @@ class TestClient(unittest.TestCase):
         response = self.c.register_item(params)
         self.assertEqual(response.status_code, 201)
 
-    def test_retrieve_items(self):
-        latitude  = 123.123
-        longitude = 54.432
-        params    = {
-                "latitude": latitude,
-                "longitude": longitude
-                }
-        response = self.c.retrieve_items(params)
-        self.assertEqual(response.status_code, 200)
+#    def test_retrieve_items(self):
+#        latitude  = 123.123
+#        longitude = 54.432
+#        params    = {
+#                "latitude": latitude,
+#                "longitude": longitude
+#                }
+#        response = self.c.retrieve_items(params)
+#        self.assertEqual(response.status_code, 200)
 
     def test_register_guest_item(self):
         guest       = 1
@@ -88,15 +89,15 @@ class TestClient(unittest.TestCase):
         response = self.c.register_guest_item(params)
         self.assertEqual(response.status_code, 201)
 
-    def test_retrieve_guest_items(self):
-        latitude  = 123.123
-        longitude = 54.432
-        params    = {
-                "latitude": latitude,
-                "longitude": longitude
-                }
-        response = self.c.retrieve_guest_items(params)
-        self.assertEqual(response.status_code, 200)
+#    def test_retrieve_guest_items(self):
+#        latitude  = 123.123
+#        longitude = 54.432
+#        params    = {
+#                "latitude": latitude,
+#                "longitude": longitude
+#                }
+#        response = self.c.retrieve_guest_items(params)
+#        self.assertEqual(response.status_code, 200)
 
 def main():
     unittest.main()
