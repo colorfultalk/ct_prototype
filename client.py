@@ -135,7 +135,7 @@ class Client:
         response = requests.post(url, data, headers = headers)
         return response
 
-    def retrieve_items(self, parmas):
+    def retrieve_items(self, params):
         """
         CALL /api/searchitems
         """
@@ -190,7 +190,7 @@ class Client:
         latitude  = params["latitude"]
         longitude = params["longitude"]
         # get jwt token
-        token = get_token()
+        token = self.get_token()
 
         url      = base_url + "api/guest-searchitems/"
         headers  = { "Content-Type" : "application/json" ,
