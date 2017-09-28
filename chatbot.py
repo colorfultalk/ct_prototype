@@ -91,6 +91,7 @@ def handle_message(event):
         # check user already registered or not
         params   = { "lineId": lineId }
         response = api_client.retrieve_guest(params)
+        print( response.status_code )
         if reponse.status_code != 200:
             # when user is new
             params   = { "lineId": lineId, "name": uName }
@@ -99,7 +100,6 @@ def handle_message(event):
         # store guestId
         guestId = response.json()['id']
         session['guestId'] = guestId
-        print( lineId + ":" + guestId )
 
         # set flow
         if text == 'register' :
