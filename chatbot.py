@@ -92,7 +92,7 @@ def handle_message(event):
         params   = { "lineId": lineId }
         response = api_client.retrieve_guest(params)
         print( response.status_code )
-        if reponse.status_code != 200:
+        if response.status_code != 200:
             # when user is new
             params   = { "lineId": lineId, "name": uName }
             response = api_client.register_guest(params)
