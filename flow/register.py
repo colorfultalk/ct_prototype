@@ -2,6 +2,7 @@ from flask import Flask, request, abort, g
 from init import *          # get constants
 from img_s3 import img_s3   # for handling image
 from template_wrapper.button import generate_button_message # original template message wrapper
+from geo_handler import geo_handler
 
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, ImageMessage, LocationMessage
@@ -19,13 +20,14 @@ class RegisterFlow:
             return True
 
     def register_guest_item( self ):
-        session = getattr(g, 'session', None)
+        session  = getattr(g, 'session', None)
+        location = geo_handler.addr2latlng(session.get('LOCATION'))
         params  = {
                 "guest"       : session.get('guestId'),
                 "description" : session.get('DESCRIPTION'),
                 "imgUrl"      : session.get('IMAGE'),
-                "latitude"    : 100.0,
-                "longitude"   : 100.0
+                "latitude"    : location[0],
+                "longitude"   : location[1]
                 }
         response = api_client.register_guest_item( params )
         return( response )
