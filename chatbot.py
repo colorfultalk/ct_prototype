@@ -85,7 +85,7 @@ def handle_message(event):
     elif 'flow' not in session:
         # when flow is not set
         lineId   = event.source.user_id
-        profile  = line_bot_api.get_profile(uId)
+        profile  = line_bot_api.get_profile(lineId)
         uName    = profile.display_name
 
         # check user already registered or not
