@@ -24,11 +24,11 @@ class RegisterFlow:
     def register_guest_item( self, guestId, description, imgUrl, location ):
         latlng = geo_handler.addr2latlng(location)
         params = {
-                "guest"       : self.guestId,
-                "description" : self.description,
-                "imgUrl"      : self.imgUrl,
-                "latitude"    : self.latlng[0],
-                "longitude"   : self.latlng[1]
+                "guest"       : guestId,
+                "description" : description,
+                "imgUrl"      : imgUrl,
+                "latitude"    : latlng[0],
+                "longitude"   : latlng[1]
                 }
         response = api_client.register_guest_item( params )
         return( response )
