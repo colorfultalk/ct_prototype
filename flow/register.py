@@ -21,15 +21,14 @@ class RegisterFlow:
             print( 'session initialized' )
             return True
 
-    def register_guest_item( self ):
-        session  = getattr(g, 'session', None)
-        location = geo_handler.addr2latlng(session.get('LOCATION'))
-        params  = {
-                "guest"       : session.get('guestId'),
-                "description" : session.get('DESCRIPTION'),
-                "imgUrl"      : session.get('IMAGE'),
-                "latitude"    : location[0],
-                "longitude"   : location[1]
+    def register_guest_item( self, guestId, description, imgUrl, location ):
+        latlng = geo_handler.addr2latlng(location)
+        params = {
+                "guest"       : self.guestId,
+                "description" : self.description,
+                "imgUrl"      : self.imgUrl,
+                "latitude"    : self.latlng[0],
+                "longitude"   : self.latlng[1]
                 }
         response = api_client.register_guest_item( params )
         return( response )
@@ -42,10 +41,6 @@ class RegisterFlow:
             reply_text = 'sequence start'
             reply_msg  = TextSendMessage( text = reply_text )
         elif next_input == ALL_SET:
-            # register
-            r = self.register_guest_item()
-            print( r.status_code )
-
             # if everything set then display demo
             reply_msg = generate_button_message(
                         text = session.get('DESCRIPTION'),
@@ -112,6 +107,13 @@ class RegisterFlow:
             # set input value
             session['LOCATION']   = location
             session['next_input'] = ALL_SET
+
+            # register
+            # session.get('LOCATION') does not work in this time
+            r = self.register_guest_item(session.get('guestId'), session.get('DESCRIPTION'),
+                    session.get('IMAGE'), location)
+            print( r.status_code )
+
             # reset flow value
             session.pop('flow')
             self.basic_reply( event.reply_token, session.get('next_input') )
