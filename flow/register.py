@@ -39,7 +39,7 @@ class RegisterFlow:
             reply_msg  = TextSendMessage( text = reply_text )
         elif next_input == ALL_SET:
             # register
-            r = register_guest_item()
+            r = self.register_guest_item()
             print( r.status_code )
 
             # if everything set then display demo
