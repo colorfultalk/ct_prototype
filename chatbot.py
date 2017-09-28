@@ -37,10 +37,6 @@ from flow.edit import EditFlow
 register_flow = RegisterFlow( line_bot_api )
 edit_flow = EditFlow( line_bot_api )
 
-# import client for api_server
-from client import Client
-api_client = Client(USERNAME, PASSWORD)
-
 @app.route("/callback", methods=['POST'])
 def callback():
     # get X-Line-Signature header value
@@ -88,10 +84,12 @@ def handle_message(event):
         profile  = line_bot_api.get_profile(lineId)
         uName    = profile.display_name
 
+        # api_client is defined in init.py
         # check user already registered or not
         params   = { "lineId": lineId }
         response = api_client.retrieve_guest(params)
         print( response.status_code )
+
         if response.status_code != 200:
             # when user is new
             params   = { "lineId": lineId, "name": uName }

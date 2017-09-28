@@ -18,6 +18,18 @@ class RegisterFlow:
             print( 'session initialized' )
             return True
 
+    def register_guest_item( self ):
+        session = getattr(g, 'session', None)
+        params  = {
+                "guest"       : session.get('guestId'),
+                "description" : session.get('DESCRIPTION'),
+                "imgUrl"      : session.get('IMAGE'),
+                "latitude"    : 100.0,
+                "longitude"   : 100.0
+                }
+        response = api_client.register_guest_item( params )
+        return( response )
+
     def basic_reply( self, reply_token, next_input ):
         session = getattr(g, 'session', None)
 
@@ -26,6 +38,10 @@ class RegisterFlow:
             reply_text = 'sequence start'
             reply_msg  = TextSendMessage( text = reply_text )
         elif next_input == ALL_SET:
+            # register
+            r = register_guest_item()
+            print( r.status_code )
+
             # if everything set then display demo
             reply_msg = generate_button_message(
                         text = session.get('DESCRIPTION'),
