@@ -1,3 +1,5 @@
+import sys,os
+sys.path.append(os.pardir)
 from flask import Flask, request, abort, g
 from init import *          # get constants
 from img_s3 import img_s3   # for handling image
