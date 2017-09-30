@@ -80,6 +80,26 @@ def handle_message(event):
 
     elif 'flow' not in session:
         # when flow is not set
+        lineId   = event.source.user_id
+        profile  = line_bot_api.get_profile(lineId)
+        uName    = profile.display_name
+
+        # api_client is defined in init.py
+        # check user already registered or not
+        params   = { "lineId": lineId }
+        response = api_client.retrieve_guest(params)
+        print( response.status_code )
+
+        if response.status_code != 200:
+            # when user is new
+            params   = { "lineId": lineId, "name": uName }
+            response = api_client.register_guest(params)
+
+        # store guestId
+        guestId = response.json()['id']
+        session['guestId'] = guestId
+
+        # set flow
         if text == 'register' :
             session['flow'] = REGISTER
         elif text == 'edit' :

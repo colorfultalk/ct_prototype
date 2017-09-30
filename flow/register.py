@@ -1,7 +1,10 @@
+import sys,os
+sys.path.append(os.pardir)
 from flask import Flask, request, abort, g
 from init import *          # get constants
 from img_s3 import img_s3   # for handling image
 from template_wrapper.button import generate_button_message # original template message wrapper
+from geo_handler import geo_handler
 
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, ImageMessage, LocationMessage
@@ -17,6 +20,18 @@ class RegisterFlow:
             session['next_input'] = IMAGE # set first input
             print( 'session initialized' )
             return True
+
+    def register_guest_item( self, guestId, description, imgUrl, location ):
+        latlng = geo_handler.addr2latlng(location)
+        params = {
+                "guest"       : guestId,
+                "description" : description,
+                "imgUrl"      : imgUrl,
+                "latitude"    : latlng[0],
+                "longitude"   : latlng[1]
+                }
+        response = api_client.register_guest_item( params )
+        return( response )
 
     def basic_reply( self, reply_token, next_input ):
         session = getattr(g, 'session', None)
@@ -92,6 +107,13 @@ class RegisterFlow:
             # set input value
             session['LOCATION']   = location
             session['next_input'] = ALL_SET
+
+            # register
+            # session.get('LOCATION') does not work in this time
+            r = self.register_guest_item(session.get('guestId'), session.get('DESCRIPTION'),
+                    session.get('IMAGE'), location)
+            print( r.status_code )
+
             # reset flow value
             session.pop('flow')
             self.basic_reply( event.reply_token, session.get('next_input') )
