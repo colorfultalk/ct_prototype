@@ -39,31 +39,24 @@ class EditFlow:
             self.line_bot_api.reply_message(reply_token, reply_msg)
 
 
+    def reset(session):
+        session.pop('flow')
+        session.pop('edit_target')
 
     def handle_text_message(self, event, session):
         text = event.message.text
+        index = session.get('edit_item_index')
+
+        if index is not None:
+            print("ERROR: no index of edit item")
+            return
         if session.get('edit_target') == DESCRIPTION:
             # set a new value to session
             session['DESCRIPTION'] = text
             self.show_item(event.reply_token)
 
             # reset flow and edit_target
-            session.pop('flow')
-            session.pop('edit_target')
-        else:
-            if 'edit_target' not in session:
-                session['edit_target'] = None
-
-            elif text == 'image':
-                session['edit_target'] = IMAGE
-
-            elif text == 'description':
-                session['edit_target'] = DESCRIPTION
-
-            elif text == 'location':
-                session['edit_target'] = LOCATION
-
-            self.basic_reply( event.reply_token, session.get('edit_target') )
+            reset(session)
 
     def handle_image_message(self, event, session):
         msgId = event.message.id
@@ -73,22 +66,21 @@ class EditFlow:
         old_image = session.get(IMAGE)
         if old_image is not None and session.get('edit_target') == IMAGE:
             # upload s3
-            presigned_url  = img_s3.upload_to_s3( message_content.content, bucket )
-            print( presigned_url )
+            presigned_url  = img_s3.upload_to_s3(message_content.content, bucket)
+            print(presigned_url)
 
             # set a new value to session
             session['IMAGE'] = presigned_url
             self.show_item(event.reply_token)
 
             # reset flow and edit_target
-            session.pop('flow')
-            session.pop('edit_target')
+            reset(session)
 
         else:
             # when get wrong input value
-            self.basic_reply( event.reply_token, session.get('edit_target') )
+            self.basic_reply(event.reply_token, session.get('edit_target'))
 
-    def handle_location_message( self, event, session ):
+    def handle_location_message(self, event, session):
         location = event.message.address
 
         if session.get('edit_target') == LOCATION:
@@ -100,9 +92,26 @@ class EditFlow:
             self.show_item(event.reply_token)
 
             # reset flow and edit_target
-            session.pop('flow')
-            session.pop('edit_target')
+            reset(session)
 
         else:
             # when get wrong input value
-            self.basic_reply( event.reply_token, session.get('edit_target') )
+            self.basic_reply(event.reply_token, session.get('edit_target'))
+
+    def handle_postback(self, event, session):
+        session['edit_item_index'] = event.postback.data
+
+        if 'edit_target' not in session:
+            session['edit_target'] = None
+
+        elif text == 'image':
+            session['edit_target'] = IMAGE
+
+        elif text == 'description':
+            session['edit_target'] = DESCRIPTION
+
+        elif text == 'location':
+            session['edit_target'] = LOCATION
+
+        self.basic_reply( event.reply_token, session.get('edit_target') )
+

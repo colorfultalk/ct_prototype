@@ -8,7 +8,7 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage, ImageMessage, LocationMessage
+    MessageEvent, TextMessage, TextSendMessage, ImageMessage, LocationMessage, PostbackEvent
 )
 from botsession import BotSessionInterface
 from init import * # set constants
@@ -191,6 +191,33 @@ def handle_message(event):
 
         else:
             print( 'ERROR : no flow matched' )
+
+# postback handler
+@handler.add(PostbackEvent)
+def handle_postback(event):
+    session = getattr(g, 'session', None)
+
+    if 'flow' not in session:
+        # when flow is not set
+        print( 'WARNING : no flow selected' )
+        warning_no_flow_selected(event)
+    else:
+        # when flow is set already
+        flow = session.get('flow')
+        if flow == REGISTER:
+            # register_flow.handle_postback( event, session )
+            pass
+
+        elif flow == EDIT:
+            edit_flow.handle_postback( event, session )
+
+        elif flow == VERIFY:
+            # TODO : implement verify mode function
+            pass
+
+        else:
+            print( 'ERROR : no flow matched' )
+
 
 def warning_no_flow_selected(event):
     reply_text = "Select a flow\n register / edit / verify"
