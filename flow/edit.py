@@ -2,6 +2,8 @@ from flask import Flask, request, abort, g
 from init import *          # get constants
 from img_s3 import img_s3   # for handling image
 from template_wrapper.button import generate_button_message # original template message wrapper
+from template_wrapper.carousel import generate_carousel_message_for_item # original template message wrapper
+from models import Item
 
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, ImageMessage, LocationMessage
@@ -27,36 +29,51 @@ class EditFlow:
         # reply
         self.line_bot_api.reply_message(reply_token, reply_msg)
 
-    def show_item(self, reply_token):
-        session = getattr(g, 'session', None)
+    def show_items(self, reply_token, session):
+        # convert dict to item object
+        items = []
+        for element in session.get('items'):
+            item = Item.__new__(Item)
+            item.__dict__.update(element)
+            items.append(item)
 
-        # if everything set then display demo
-        if session.get('next_input') == ALL_SET:
-            reply_msg = generate_button_message(
-                text = session.get('DESCRIPTION'),
-                thumbnail_image_url = session.get('IMAGE')
-            )
-            self.line_bot_api.reply_message(reply_token, reply_msg)
+        reply_msg = generate_carousel_message_for_item(items)
+        self.line_bot_api.reply_message(reply_token, reply_msg)
 
-
-    def reset(session):
+    def reset(self, session):
         session.pop('flow')
         session.pop('edit_target')
 
     def handle_text_message(self, event, session):
         text = event.message.text
-        index = session.get('edit_item_index')
 
-        if index is not None:
-            print("ERROR: no index of edit item")
-            return
-        if session.get('edit_target') == DESCRIPTION:
+        if text == 'image':
+            session['edit_target'] = IMAGE
+
+        elif text == 'description':
+            session['edit_target'] = DESCRIPTION
+
+        elif text == 'location':
+            session['edit_target'] = LOCATION
+
+        elif 'edit_target' not in session:
+            session['edit_target'] = None
+
+        elif session.get('edit_target') == DESCRIPTION:
+            index = int(session.get('edit_item_index'))
+            if index is None:
+                print("ERROR: no index of edit item")
+                return
+
             # set a new value to session
-            session['DESCRIPTION'] = text
-            self.show_item(event.reply_token)
+            session['items'][index]['description'] = text
+            self.show_items(event.reply_token, session)
 
             # reset flow and edit_target
-            reset(session)
+            self.reset(session)
+            return
+
+        self.basic_reply( event.reply_token, session.get('edit_target') )
 
     def handle_image_message(self, event, session):
         msgId = event.message.id
@@ -74,7 +91,7 @@ class EditFlow:
             self.show_item(event.reply_token)
 
             # reset flow and edit_target
-            reset(session)
+            self.reset(session)
 
         else:
             # when get wrong input value
@@ -92,7 +109,7 @@ class EditFlow:
             self.show_item(event.reply_token)
 
             # reset flow and edit_target
-            reset(session)
+            self.reset(session)
 
         else:
             # when get wrong input value
@@ -101,17 +118,5 @@ class EditFlow:
     def handle_postback(self, event, session):
         session['edit_item_index'] = event.postback.data
 
-        if 'edit_target' not in session:
-            session['edit_target'] = None
-
-        elif text == 'image':
-            session['edit_target'] = IMAGE
-
-        elif text == 'description':
-            session['edit_target'] = DESCRIPTION
-
-        elif text == 'location':
-            session['edit_target'] = LOCATION
-
-        self.basic_reply( event.reply_token, session.get('edit_target') )
+        self.basic_reply(event.reply_token, None)
 
