@@ -12,6 +12,8 @@ from linebot.models import (
 )
 from botsession import BotSessionInterface
 from init import * # set constants
+from template_wrapper.carousel import generate_carousel_message_for_item # original template message wrapper
+from models import (Item, Location)
 
 app = Flask(__name__)
 botSessionInterface = BotSessionInterface()
@@ -104,6 +106,19 @@ def handle_message(event):
             session['flow'] = REGISTER
         elif text == 'edit' :
             session['flow'] = EDIT
+            # create dummy items
+            items = []
+            for i in range(5):
+                item = Item(
+                    image_url = "https://s3.us-east-2.amazonaws.com/test-boto.mr-sunege.com/tmp/5qv16iyopm6idqq.jpg",
+                    description = "description" + str(i),
+                    location = Location("8916-5 Takayama-cho, Ikoma, Nara 630-0192", 34.732128, 135.732925)
+                )
+                items.append(item)
+
+            session['items'] = items
+            reply_msg = generate_carousel_message_for_item(items)
+            line_bot_api.reply_message(event.reply_token, reply_msg)
             edit_flow.handle_text_message( event, session )
 
         elif text == 'verify' :
