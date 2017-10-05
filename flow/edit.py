@@ -44,6 +44,15 @@ class EditFlow:
         session.pop('flow')
         session.pop('edit_target')
 
+    def edit_item_detail(self, key, new_data, session):
+        index = int(session.get('edit_item_index'))
+        if index is None:
+            print("ERROR: no index of edit item")
+            return
+
+        session['items'][index][key] = new_data
+
+
     def handle_text_message(self, event, session):
         text = event.message.text
 
@@ -60,13 +69,8 @@ class EditFlow:
             session['edit_target'] = None
 
         elif session.get('edit_target') == DESCRIPTION:
-            index = int(session.get('edit_item_index'))
-            if index is None:
-                print("ERROR: no index of edit item")
-                return
-
             # set a new value to session
-            session['items'][index]['description'] = text
+            self.edit_item_detail('description', text, session)
             self.show_items(event.reply_token, session)
 
             # reset flow and edit_target
@@ -79,16 +83,14 @@ class EditFlow:
         msgId = event.message.id
         message_content = self.line_bot_api.get_message_content(msgId)
 
-        # TODO 編集するアイテムを選択する必要あり
-        old_image = session.get(IMAGE)
-        if old_image is not None and session.get('edit_target') == IMAGE:
+        if session.get('edit_target') == IMAGE:
             # upload s3
             presigned_url  = img_s3.upload_to_s3(message_content.content, bucket)
             print(presigned_url)
 
             # set a new value to session
-            session['IMAGE'] = presigned_url
-            self.show_item(event.reply_token)
+            self.edit_item_detail('image_url', presigned_url, session)
+            self.show_items(event.reply_token, session)
 
             # reset flow and edit_target
             self.reset(session)
@@ -105,8 +107,8 @@ class EditFlow:
             print( location )
 
             # set a new value to session
-            session['LOCATION'] = location
-            self.show_item(event.reply_token)
+            self.edit_item_detail('address', location, session)
+            self.show_items(event.reply_token, session)
 
             # reset flow and edit_target
             self.reset(session)
