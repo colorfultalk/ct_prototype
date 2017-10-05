@@ -118,7 +118,7 @@ class EditFlow:
             self.basic_reply(event.reply_token, session.get('edit_target'))
 
     def handle_postback(self, event, session):
-        session['edit_item_index'] = event.postback.data
+        session['edit_item_index'] = event.postback.data.split('&')[1]
 
         self.basic_reply(event.reply_token, None)
 

@@ -80,6 +80,24 @@ def handle_message(event):
             session.pop(key, None)
         print( 'session cleared' )
 
+    elif text == 'show' :
+        # create dummy items
+        items = []
+        for i in range(5):
+            item = Item(
+                image_url = "https://s3.us-east-2.amazonaws.com/test-boto.mr-sunege.com/tmp/5qv16iyopm6idqq.jpg",
+                description = "description" + str(i),
+                address = "8916-5 Takayama-cho, Ikoma, Nara 630-0192",
+                latitude = 34.732128,
+                longitude = 135.732925
+            )
+            items.append(item)
+
+        session['items'] = list(map(lambda item: item.__dict__, items))
+        # show items
+        reply_msg = generate_carousel_message_for_item(items)
+        line_bot_api.reply_message(event.reply_token, reply_msg)
+
     elif 'flow' not in session:
         # when flow is not set
         lineId   = event.source.user_id
@@ -104,41 +122,13 @@ def handle_message(event):
         # set flow
         if text == 'register' :
             session['flow'] = REGISTER
-        elif text == 'edit' :
-            session['flow'] = EDIT
-            # create dummy items
-            items = []
-            for i in range(5):
-                item = Item(
-                    image_url = "https://s3.us-east-2.amazonaws.com/test-boto.mr-sunege.com/tmp/5qv16iyopm6idqq.jpg",
-                    description = "description" + str(i),
-                    address = "8916-5 Takayama-cho, Ikoma, Nara 630-0192",
-                    latitude = 34.732128,
-                    longitude = 135.732925
-                )
-                items.append(item)
-
-                # params = {
-                #         "guest"       : guestId,
-                #         "description" : item.description,
-                #         "imgUrl"      : item.image_url,
-                #         "latitude"    : item.location.latitude,
-                #         "longitude"   : item.location.longitude
-                #         }
-                # response = api_client.register_guest_item( params )
-                # print(response.json())
-
-            session['items'] = list(map(lambda item: item.__dict__, items))
-            # show items
-            reply_msg = generate_carousel_message_for_item(items)
-            line_bot_api.reply_message(event.reply_token, reply_msg)
 
         elif text == 'verify' :
             # TODO : implement verify mode function
             pass
         else:
             print( 'WARNING : no flow selected' )
-            warning_no_flow_selected(event)
+            show_command(event)
     else:
         # when flow is set already
         flow = session.get('flow')
@@ -161,7 +151,7 @@ def handle_message(event):
     if 'flow' not in session:
         # when flow is not set
         print( 'WARNING : no flow selected' )
-        warning_no_flow_selected(event)
+        show_command(event)
 
     else:
         # when flow is set already
@@ -187,7 +177,7 @@ def handle_message(event):
     if 'flow' not in session:
         # when flow is not set
         print( 'WARNING : no flow selected' )
-        warning_no_flow_selected(event)
+        show_command(event)
     else:
         # when flow is set already
         flow = session.get('flow')
@@ -208,31 +198,15 @@ def handle_message(event):
 @handler.add(PostbackEvent)
 def handle_postback(event):
     session = getattr(g, 'session', None)
+    flow = event.postback.data.split('&')[0]
 
-    if 'flow' not in session:
-        # when flow is not set
-        print( 'WARNING : no flow selected' )
-        warning_no_flow_selected(event)
-    else:
-        # when flow is set already
-        flow = session.get('flow')
-        if flow == REGISTER:
-            # register_flow.handle_postback( event, session )
-            pass
-
-        elif flow == EDIT:
-            edit_flow.handle_postback( event, session )
-
-        elif flow == VERIFY:
-            # TODO : implement verify mode function
-            pass
-
-        else:
-            print( 'ERROR : no flow matched' )
+    if flow == 'edit':
+        session['flow'] = EDIT
+        edit_flow.handle_postback( event, session )
 
 
-def warning_no_flow_selected(event):
-    reply_text = "Select a flow\n register / edit / verify"
+def show_command(event):
+    reply_text = "Command\n register / show / verify"
     reply_msg  = TextSendMessage(text=reply_text)
     line_bot_api.reply_message(
         event.reply_token,
