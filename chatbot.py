@@ -105,17 +105,13 @@ def handle_message(event):
         elif text == 'edit' :
             session['flow'] = EDIT
             edit_flow.handle_text_message( event, session )
+
         elif text == 'verify' :
             # TODO : implement verify mode function
             pass
         else:
             print( 'WARNING : no flow selected' )
-            reply_text = "Select a flow\n register / edit / verify"
-            reply_msg  = TextSendMessage(text=reply_text)
-            line_bot_api.reply_message(
-                event.reply_token,
-                reply_msg
-            )
+            warning_no_flow_selected(event)
     else:
         # when flow is set already
         flow = session.get('flow')
@@ -138,12 +134,7 @@ def handle_message(event):
     if 'flow' not in session:
         # when flow is not set
         print( 'WARNING : no flow selected' )
-        reply_text = "Select a flow\n register / edit / verify"
-        reply_msg  = TextSendMessage(text=reply_text)
-        line_bot_api.reply_message(
-            event.reply_token,
-            reply_msg
-        )
+        warning_no_flow_selected(event)
 
     else:
         # when flow is set already
@@ -169,6 +160,7 @@ def handle_message(event):
     if 'flow' not in session:
         # when flow is not set
         print( 'WARNING : no flow selected' )
+        warning_no_flow_selected(event)
     else:
         # when flow is set already
         flow = session.get('flow')
@@ -184,6 +176,14 @@ def handle_message(event):
 
         else:
             print( 'ERROR : no flow matched' )
+
+def warning_no_flow_selected(event):
+    reply_text = "Select a flow\n register / edit / verify"
+    reply_msg  = TextSendMessage(text=reply_text)
+    line_bot_api.reply_message(
+        event.reply_token,
+        reply_msg
+    )
 
 if __name__ == "__main__":
     app.run(port=8000)
