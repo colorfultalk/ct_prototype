@@ -22,3 +22,4 @@ def generate_button_message(text, thumbnail_image_url, actions = sample_actions)
                 template = button_template
             )
     return( button_message )
+

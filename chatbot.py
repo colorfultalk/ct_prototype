@@ -8,10 +8,12 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage, ImageMessage, LocationMessage
+    MessageEvent, TextMessage, TextSendMessage, ImageMessage, LocationMessage, PostbackEvent
 )
 from botsession import BotSessionInterface
 from init import * # set constants
+from template_wrapper.carousel import generate_carousel_message_for_item # original template message wrapper
+from models import Item
 
 app = Flask(__name__)
 botSessionInterface = BotSessionInterface()
@@ -78,6 +80,24 @@ def handle_message(event):
             session.pop(key, None)
         print( 'session cleared' )
 
+    elif text == 'show' :
+        # create dummy items
+        items = []
+        for i in range(5):
+            item = Item(
+                image_url = "https://s3.us-east-2.amazonaws.com/test-boto.mr-sunege.com/tmp/5qv16iyopm6idqq.jpg",
+                description = "description" + str(i),
+                address = "8916-5 Takayama-cho, Ikoma, Nara 630-0192",
+                latitude = 34.732128,
+                longitude = 135.732925
+            )
+            items.append(item)
+
+        session['items'] = list(map(lambda item: item.__dict__, items))
+        # show items
+        reply_msg = generate_carousel_message_for_item(items)
+        line_bot_api.reply_message(event.reply_token, reply_msg)
+
     elif 'flow' not in session:
         # when flow is not set
         lineId   = event.source.user_id
@@ -102,20 +122,13 @@ def handle_message(event):
         # set flow
         if text == 'register' :
             session['flow'] = REGISTER
-        elif text == 'edit' :
-            session['flow'] = EDIT
-            edit_flow.handle_text_message( event, session )
+
         elif text == 'verify' :
             # TODO : implement verify mode function
             pass
         else:
             print( 'WARNING : no flow selected' )
-            reply_text = "Select a flow\n register / edit / verify"
-            reply_msg  = TextSendMessage(text=reply_text)
-            line_bot_api.reply_message(
-                event.reply_token,
-                reply_msg
-            )
+            show_command(event)
     else:
         # when flow is set already
         flow = session.get('flow')
@@ -138,12 +151,7 @@ def handle_message(event):
     if 'flow' not in session:
         # when flow is not set
         print( 'WARNING : no flow selected' )
-        reply_text = "Select a flow\n register / edit / verify"
-        reply_msg  = TextSendMessage(text=reply_text)
-        line_bot_api.reply_message(
-            event.reply_token,
-            reply_msg
-        )
+        show_command(event)
 
     else:
         # when flow is set already
@@ -169,6 +177,7 @@ def handle_message(event):
     if 'flow' not in session:
         # when flow is not set
         print( 'WARNING : no flow selected' )
+        show_command(event)
     else:
         # when flow is set already
         flow = session.get('flow')
@@ -184,6 +193,25 @@ def handle_message(event):
 
         else:
             print( 'ERROR : no flow matched' )
+
+# postback handler
+@handler.add(PostbackEvent)
+def handle_postback(event):
+    session = getattr(g, 'session', None)
+    flow = event.postback.data.split('&')[0]
+
+    if flow == 'edit':
+        session['flow'] = EDIT
+        edit_flow.handle_postback( event, session )
+
+
+def show_command(event):
+    reply_text = "Command\n register / show / verify"
+    reply_msg  = TextSendMessage(text=reply_text)
+    line_bot_api.reply_message(
+        event.reply_token,
+        reply_msg
+    )
 
 if __name__ == "__main__":
     app.run(port=8000)

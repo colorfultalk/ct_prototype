@@ -24,3 +24,14 @@ class Session(BaseModel):
     data = BinaryJSONField()
     expiration = DateTimeField()
 
+class Item:
+    def __init__(self, image_url=None, description=None, address=None, latitude=None, longitude=None):
+        self.image_url = image_url
+        self.description = description
+        self.address = address
+        self.latitude = latitude
+        self.longitude = longitude
+
+    def register():
+        # TODO: send json to API server for register
+        pass

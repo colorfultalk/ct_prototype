@@ -114,9 +114,10 @@ class RegisterFlow:
                     session.get('IMAGE'), location)
             print( r.status_code )
 
+            self.basic_reply( event.reply_token, session.get('next_input') )
             # reset flow value
             session.pop('flow')
-            self.basic_reply( event.reply_token, session.get('next_input') )
+            session.pop('next_input')
 
         else:
             # when get wrong input value
