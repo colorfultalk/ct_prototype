@@ -199,6 +199,6 @@ class Client:
                 "latitude": latitude,
                 "longitude": longitude
                 }
-        data     = json.dumps(obj).encode("utf-8")
-        response = requests.get(url, data, headers = headers)
+        # data     = json.dumps(obj).encode("utf-8")
+        response = requests.get(url, params = obj, headers = headers)
         return response
