@@ -75,31 +75,8 @@ def handle_message(event):
     session = getattr(g, 'session', None)
     text    = event.message.text
 
-    if text == 'clear':
-        for key in list(session):
-            session.pop(key, None)
-        print( 'session cleared' )
-
-    elif text == 'show' :
-        # create dummy items
-        items = []
-        for i in range(5):
-            item = Item(
-                image_url = "https://s3.us-east-2.amazonaws.com/test-boto.mr-sunege.com/tmp/5qv16iyopm6idqq.jpg",
-                description = "description" + str(i),
-                address = "8916-5 Takayama-cho, Ikoma, Nara 630-0192",
-                latitude = 34.732128,
-                longitude = 135.732925
-            )
-            items.append(item)
-
-        session['items'] = list(map(lambda item: item.__dict__, items))
-        # show items
-        reply_msg = generate_carousel_message_for_item(items)
-        line_bot_api.reply_message(event.reply_token, reply_msg)
-
-    elif 'flow' not in session:
-        # when flow is not set
+    # when guestId not set, check user
+    if 'guestId' not in session:
         lineId   = event.source.user_id
         profile  = line_bot_api.get_profile(lineId)
         uName    = profile.display_name
@@ -119,6 +96,33 @@ def handle_message(event):
         guestId = response.json()['id']
         session['guestId'] = guestId
 
+    if text == 'clear':
+        for key in list(session):
+            session.pop(key, None)
+        print( 'session cleared' )
+
+    elif text == 'show' :
+
+        params      = {"guestId" : session.get('guestId')}
+        response    = api_client.search_my_guest_items( params )
+        data        = eval( response.json() )
+
+        for i in range(5):
+            item = Item(
+                image_url   = data[i]['imgUrl'],
+                description = data[i]['description'],
+                address     = "8916-5 Takayama-cho, Ikoma, Nara 630-0192",
+                latitude    = data[i]['latitude'],
+                longitude   = data[i]['longitude']
+            )
+            items.append(item)
+
+        session['items'] = list(map(lambda item: item.__dict__, items))
+        # show items
+        reply_msg = generate_carousel_message_for_item(items)
+        line_bot_api.reply_message(event.reply_token, reply_msg)
+
+    elif 'flow' not in session:
         # set flow
         if text == 'register' :
             session['flow'] = REGISTER
