@@ -7,7 +7,7 @@ import random
 # s3 client
 import boto3
 s3 = boto3.client('s3')
-IMG_EXPIREIN = 3600 * 24 # 3600 means 1 hour
+IMG_EXPIREIN = 3600 * 24 * 365 # 3600 means 1 hour
 
 def random_string(length, seq='0123456789abcdefghijklmnopqrstuvwxyz'):
     sr = random.SystemRandom()
