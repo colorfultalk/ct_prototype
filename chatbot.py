@@ -102,11 +102,11 @@ def handle_message(event):
         print( 'session cleared' )
 
     elif text == 'show' :
-
         params      = {"guestId" : session.get('guestId')}
         response    = api_client.search_my_guest_items( params )
         data        = eval( response.json() )
 
+        items       = []
         for i in range(5):
             item = Item(
                 image_url   = data[i]['imgUrl'],
