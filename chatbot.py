@@ -115,7 +115,7 @@ def handle_message(event):
                longitude = 135.732925
 		)
 
-	if response.status_code is not 200:
+        if response.status_code is not 200:
             # when search failed
             items.append(sample)
 
