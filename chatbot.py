@@ -118,7 +118,7 @@ def handle_message(event):
                     latitude    = data[i]['latitude'],
                     longitude   = data[i]['longitude']
                 )
-             items.append(item)
+            items.append(item)
 
         else :
             # when failed
@@ -129,7 +129,7 @@ def handle_message(event):
                      latitude = 34.732128,
                      longitude = 135.732925
                     )
-             items.append(item)
+            items.append(item)
 
         # show items
         session['items'] = list(map(lambda item: item.__dict__, items))
