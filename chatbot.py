@@ -106,8 +106,25 @@ def handle_message(event):
         response    = api_client.search_my_guest_items( params )
         items       = []
 
-        if response.status_code == 200:
-            # when search func success
+        # set sample item
+        sample = Item(
+        	image_url = "https://s3.us-east-2.amazonaws.com/test-boto.mr-sunege.com/tmp/5qv16iyopm6idqq.jpg",
+               description = "you have not registered an item yet",
+               address = "8916-5 Takayama-cho, Ikoma, Nara 630-0192",
+               latitude = 34.732128,
+               longitude = 135.732925
+		)
+
+	if response.status_code is not 200:
+            # when search failed
+            items.append(sample)
+
+        elif len( eval(response.json()) ) == 0:
+            # when search success but no item found
+            items.append(sample)
+
+        else:
+            # when search success and some items found
             data        = eval( response.json() )
             data        = data[0:5] # extract latest five items
             for i in range(len(data)):
@@ -119,17 +136,6 @@ def handle_message(event):
                     longitude   = data[i]['longitude']
                 )
                 items.append(item)
-
-        else :
-            # when failed
-            item = Item(
-                    image_url = "https://s3.us-east-2.amazonaws.com/test-boto.mr-sunege.com/tmp/5qv16iyopm6idqq.jpg",
-                     description = "you have not registered an item yet",
-                     address = "8916-5 Takayama-cho, Ikoma, Nara 630-0192",
-                     latitude = 34.732128,
-                     longitude = 135.732925
-                    )
-            items.append(item)
 
         # show items
         session['items'] = list(map(lambda item: item.__dict__, items))
