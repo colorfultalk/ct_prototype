@@ -104,21 +104,35 @@ def handle_message(event):
     elif text == 'show' :
         params      = {"guestId" : session.get('guestId')}
         response    = api_client.search_my_guest_items( params )
-        data        = eval( response.json() )
-
         items       = []
-        for i in range(5):
-            item = Item(
-                image_url   = data[i]['imgUrl'],
-                description = data[i]['description'],
-                address     = "8916-5 Takayama-cho, Ikoma, Nara 630-0192",
-                latitude    = data[i]['latitude'],
-                longitude   = data[i]['longitude']
-            )
-            items.append(item)
 
-        session['items'] = list(map(lambda item: item.__dict__, items))
+        if response.status_code == 200:
+            # when search func success
+            data        = eval( response.json() )
+            data        = data[0:5] # extract latest five items
+            for i in range(len(data)):
+                item = Item(
+                    image_url   = data[i]['imgUrl'],
+                    description = data[i]['description'],
+                    address     = "8916-5 Takayama-cho, Ikoma, Nara 630-0192",
+                    latitude    = data[i]['latitude'],
+                    longitude   = data[i]['longitude']
+                )
+             items.append(item)
+
+        else :
+            # when failed
+            item = Item(
+                    image_url = "https://s3.us-east-2.amazonaws.com/test-boto.mr-sunege.com/tmp/5qv16iyopm6idqq.jpg",
+                     description = "you have not registered an item yet",
+                     address = "8916-5 Takayama-cho, Ikoma, Nara 630-0192",
+                     latitude = 34.732128,
+                     longitude = 135.732925
+                    )
+             items.append(item)
+
         # show items
+        session['items'] = list(map(lambda item: item.__dict__, items))
         reply_msg = generate_carousel_message_for_item(items)
         line_bot_api.reply_message(event.reply_token, reply_msg)
 
