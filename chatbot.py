@@ -118,7 +118,7 @@ def handle_message(event):
                     latitude    = data[i]['latitude'],
                     longitude   = data[i]['longitude']
                 )
-            items.append(item)
+                items.append(item)
 
         else :
             # when failed
