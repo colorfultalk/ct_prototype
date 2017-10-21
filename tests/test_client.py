@@ -53,12 +53,18 @@ class TestClient(unittest.TestCase):
         description = "Let's go"
         imgUrl      = "https://hogehoge.com/hogehoge.png"
         host        = 1
+        latitude    = 34.733038
+        longitude   = 135.732624
+        address     = "Takayama-cho 8916-5, Ikoma, Nara"
         params      = {
                 "name":        name,
                 "price":       price,
                 "description": description,
                 "imgUrl":      imgUrl,
-                "host":        host
+                "host":        host,
+                "latitude":    latitude,
+                "longitude":   longitude,
+                "address":     address
                 }
         response = self.c.register_item(params)
         self.assertEqual(response.status_code, 201)
@@ -77,14 +83,16 @@ class TestClient(unittest.TestCase):
         guest       = 1
         description = "Let it go"
         imgUrl      = "https://hogehoge.com/hogehgoe.png"
-        longitude   = 123.123
-        latitude    = 54.432
+        latitude    = 34.733038
+        longitude   = 135.732624
+        address     = "Takayama-cho 8916-5, Ikoma, Nara"
         params      = {
-                "guest": guest,
+                "guest":       guest,
                 "description": description,
-                "imgUrl": imgUrl,
-                "latitude": latitude,
-                "longitude": longitude
+                "imgUrl":      imgUrl,
+                "latitude":    latitude,
+                "longitude":   longitude,
+                "address":     address
                 }
         response = self.c.register_guest_item(params)
         self.assertEqual(response.status_code, 201)
