@@ -47,13 +47,14 @@ class SearchFlow:
             "longitude"   : event.message.longitude
         }
 
-        response = api_client.retrieve_guest_items(params)
+        response    = api_client.retrieve_guest_items(params)
+        datas       = eval( response.json() )[-5:]
         print()
         print("response:")
-        pprint(eval(response.json()))
+        pprint( datas )
 
         items = []
-        for json in eval(response.json()):
+        for json in datas:
             items.append(self.json_to_item(json))
 
         self.show_items(event.reply_token, items)
