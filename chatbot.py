@@ -100,6 +100,7 @@ def handle_message(event):
         for key in list(session):
             session.pop(key, None)
         print( 'session cleared' )
+        show_command(event)
 
     elif text == 'show' :
         params      = {"guestId" : session.get('guestId')}
