@@ -53,8 +53,18 @@ class SearchFlow:
         print("response:")
         pprint( datas )
 
-        items = []
-        for json in datas:
-            items.append(self.json_to_item(json))
+        if len( datas ) > 0:
+            # when at least one data is found around input location
+            items = []
+            for json in datas:
+                items.append(self.json_to_item(json))
+            self.show_items(event.reply_token, items)
 
-        self.show_items(event.reply_token, items)
+        else:
+            # when no data is found
+            reply_text = 'No item found around here ;('
+            reply_msg  = TextSendMessage(text=reply_text)
+            self.line_bot_api.reply_message(
+                    event.reply_token,
+                    reply_msg
+            )
