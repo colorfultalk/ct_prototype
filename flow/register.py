@@ -16,7 +16,7 @@ class RegisterFlow:
         self.line_bot_api = line_bot_api
 
     # session initializer
-    def initialize( self, session ):
+    def initialize( self, event, session ):
             FIRST_INPUT = IMAGE # set first input
             session['next_input'] = FIRST_INPUT
             self.basic_reply( event.reply_token, FIRST_INPUT )
@@ -59,7 +59,7 @@ class RegisterFlow:
 
         # when session is not initialized
         if 'next_input' not in session:
-            self.initialize( session )
+            self.initialize( event, session )
 
         elif session.get('next_input') == DESCRIPTION:
             # set input value to session
@@ -96,7 +96,7 @@ class RegisterFlow:
 
         # when session is not initialized
         if 'next_input' not in session:
-            self.initialize( session )
+            self.initialize( event, session )
 
         elif session.get('next_input') == LOCATION:
             # location

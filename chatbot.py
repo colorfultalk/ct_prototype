@@ -146,6 +146,7 @@ def handle_message(event):
         # set flow
         if text == 'register' :
             session['flow'] = REGISTER
+            register_flow.initialize(event, session)
 
         elif text == 'verify' :
             # TODO : implement verify mode function
