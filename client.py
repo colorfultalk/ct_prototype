@@ -202,3 +202,19 @@ class Client:
         # data     = json.dumps(obj).encode("utf-8")
         response = requests.get(url, params = obj, headers = headers)
         return response
+
+    def search_my_guest_items(self, params):
+        """
+        CALL /api/guest-myitems
+        """
+        guestId = params["guestId"]
+        token   = self.get_token()
+
+        url     = base_url + "api/guest-myitems/"
+        headers = { "Content-Type" : "application/json" ,
+                    "Authorization" : 'JWT {}'.format(token) }
+        obj     = {
+                "guestId" : guestId
+                }
+        response = requests.get(url, params = obj, headers = headers)
+        return response
