@@ -32,8 +32,6 @@ class Client:
         """
         name      = params["name"]
         shopName  = params["shopName"]
-        longitude = params["longitude"]
-        latitude  = params["latitude"]
 
         token   = get_token()
         url     = base_url + "api/hosts/"
@@ -41,9 +39,7 @@ class Client:
                     "Authorization" : 'JWT {}'.format(token) }
         obj = {
                 "name": name,
-                "shopName": shopName,
-                "longitude": longitude,
-                "latitude": latitude
+                "shopName": shopName
                 }
         data = json.dumps(obj).encode("utf-8")
         # check given lineId is already registered or not
@@ -118,6 +114,9 @@ class Client:
         description = params["description"]
         imgUrl      = params["imgUrl"]
         host        = params["host"]
+        longitude   = params["longitude"]
+        latitude    = params["latitude"]
+        address     = params["address"]
         # get jwt token
         token = self.get_token()
 
@@ -129,7 +128,10 @@ class Client:
                 "price":       price,
                 "description": description,
                 "imgUrl":      imgUrl,
-                "host":        host
+                "host":        host,
+                "longitude":   longitude,
+                "latitude":    latitude,
+                "address":     address
                 }
         data     = json.dumps(obj).encode("utf-8")
         response = requests.post(url, data, headers = headers)
@@ -165,6 +167,7 @@ class Client:
         imgUrl      = params['imgUrl']
         longitude   = params['longitude']
         latitude    = params['latitude']
+        address     = params["address"]
 
         # get jwt token
         token = self.get_token()
@@ -173,11 +176,12 @@ class Client:
         headers = { "Content-Type" : "application/json" ,
                     "Authorization" : 'JWT {}'.format(token) }
         obj      = {
-                "guest": guest,
+                "guest":       guest,
                 "description": description,
-                "imgUrl": imgUrl,
-                "latitude": latitude,
-                "longitude": longitude
+                "imgUrl":      imgUrl,
+                "latitude":    latitude,
+                "longitude":   longitude
+                "address":     address
                 }
         data     = json.dumps(obj).encode("utf-8")
         response = requests.post(url, data, headers = headers)
