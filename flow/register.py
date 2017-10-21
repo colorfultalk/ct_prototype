@@ -16,9 +16,10 @@ class RegisterFlow:
         self.line_bot_api = line_bot_api
 
     # session initializer
-    def initialize( self, session ):
-            session['next_input'] = IMAGE # set first input
-            print( 'session initialized' )
+    def initialize( self, event, session ):
+            FIRST_INPUT = IMAGE # set first input
+            session['next_input'] = FIRST_INPUT
+            self.basic_reply( event.reply_token, FIRST_INPUT )
             return True
 
     def register_guest_item( self, guestId, description, imgUrl, location ):
@@ -37,10 +38,7 @@ class RegisterFlow:
         session = getattr(g, 'session', None)
 
         # set reply_text
-        if next_input == START:
-            reply_text = 'sequence start'
-            reply_msg  = TextSendMessage( text = reply_text )
-        elif next_input == ALL_SET:
+        if next_input == ALL_SET:
             # if everything set then display demo
             reply_msg = generate_button_message(
                         text = session.get('DESCRIPTION'),
@@ -61,7 +59,7 @@ class RegisterFlow:
 
         # when session is not initialized
         if 'next_input' not in session:
-            self.initialize( session )
+            self.initialize( event, session )
 
         elif session.get('next_input') == DESCRIPTION:
             # set input value to session
@@ -98,7 +96,7 @@ class RegisterFlow:
 
         # when session is not initialized
         if 'next_input' not in session:
-            self.initialize( session )
+            self.initialize( event, session )
 
         elif session.get('next_input') == LOCATION:
             # location

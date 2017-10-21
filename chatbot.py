@@ -100,6 +100,7 @@ def handle_message(event):
         for key in list(session):
             session.pop(key, None)
         print( 'session cleared' )
+        show_command(event)
 
     elif text == 'show' :
         params      = {"guestId" : session.get('guestId')}
@@ -146,6 +147,7 @@ def handle_message(event):
         # set flow
         if text == 'register' :
             session['flow'] = REGISTER
+            register_flow.initialize(event, session)
 
         elif text == 'verify' :
             # TODO : implement verify mode function
