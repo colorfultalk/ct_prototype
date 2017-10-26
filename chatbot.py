@@ -35,9 +35,11 @@ parser  = WebhookParser(channel_secret)
 # import all flow
 from flow.register import RegisterFlow
 from flow.edit import EditFlow
+from flow.search import SearchFlow
 # initialize all flow
 register_flow = RegisterFlow( line_bot_api )
 edit_flow = EditFlow( line_bot_api )
+search_flow = SearchFlow( line_bot_api )
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -149,6 +151,10 @@ def handle_message(event):
             session['flow'] = REGISTER
             register_flow.initialize(event, session)
 
+        elif text == 'search' :
+            session['flow'] = SEARCH
+            search_flow.handle_text_message( event, session )
+
         elif text == 'verify' :
             # TODO : implement verify mode function
             pass
@@ -162,7 +168,8 @@ def handle_message(event):
             register_flow.handle_text_message( event, session )
         elif flow == EDIT:
             edit_flow.handle_text_message( event, session )
-            pass
+        elif flow == SEARCH:
+            search_flow.handle_text_message( event, session )
         elif flow == VERIFY:
             # TODO : implement verify mode function
             pass
@@ -213,6 +220,9 @@ def handle_message(event):
         elif flow == EDIT:
             edit_flow.handle_location_message( event, session )
 
+        elif flow == SEARCH:
+            search_flow.handle_location_message( event, session )
+
         elif flow == VERIFY:
             # TODO : implement verify mode function
             pass
@@ -232,7 +242,7 @@ def handle_postback(event):
 
 
 def show_command(event):
-    reply_text = "Command\n register / show / verify"
+    reply_text = "Command\n register / show / search / verify"
     reply_msg  = TextSendMessage(text=reply_text)
     line_bot_api.reply_message(
         event.reply_token,

@@ -3,6 +3,7 @@
 REGISTER = 'REGISTER'
 EDIT     = 'EDIT'
 VERIFY   = 'VERIFY'
+SEARCH = 'SEARCH'
 
 # To check which phase a user is on
 IMAGE       = 'IMAGE'
