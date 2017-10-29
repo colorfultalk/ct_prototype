@@ -23,7 +23,7 @@ class ShowFlow:
     # this means ShowFlow.showItems() function
     def show_items(self, event, session):
         params      = {"guestId" : session.get('guestId')}
-        response    = api_client.search_my_guest_items( params )
+        response    = self.api_client.search_my_guest_items( params )
         items       = []
 
         if response.status_code is not 200:
