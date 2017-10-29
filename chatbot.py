@@ -172,26 +172,56 @@ def flow_swicher(event, session, flow):
         msg_type    = event.message.type
         print( msg_type )
 
-        if flow == REGISTER:
-            register_flow.handle_location_message( event, session )
+        if msg_type == 'text':
+            if flow == REGISTER:
+                register_flow.handle_text_message( event, session )
+            elif flow == EDIT:
+                edit_flow.handle_text_message( event, session )
+            elif flow == SEARCH:
+                search_flow.handle_text_message( event, session )
+            elif flow == SHOW:
+                # TODO : implement
+                pass
+            elif flow == VERIFY:
+                # TODO : implement verify mode function
+                pass
+            else:
+                print( 'ERROR : no flow matched' )
+                status_code = -1
 
-        elif flow == EDIT:
-            edit_flow.handle_location_message( event, session )
+        if msg_type == 'image':
+            if flow == REGISTER:
+                register_flow.handle_image_message( event, session )
+            elif flow == EDIT:
+                edit_flow.handle_image_message( event, session )
+            elif flow == SEARCH:
+                search_flow.handle_image_message( event, session )
+            elif flow == SHOW:
+                # TODO : implement
+                pass
+            elif flow == VERIFY:
+                # TODO : implement verify mode function
+                pass
+            else:
+                print( 'ERROR : no flow matched' )
+                status_code = -1
 
-        elif flow == SEARCH:
-            search_flow.handle_location_message( event, session )
-
-        elif flow == SHOW:
-            # TODO : implement
-            pass
-
-        elif flow == VERIFY:
-            # TODO : implement verify mode function
-            pass
-
-        else:
-            print( 'ERROR : no flow matched' )
-            status_code = -1
+        if msg_type == 'location':
+            if flow == REGISTER:
+                register_flow.handle_location_message( event, session )
+            elif flow == EDIT:
+                edit_flow.handle_location_message( event, session )
+            elif flow == SEARCH:
+                search_flow.handle_location_message( event, session )
+            elif flow == SHOW:
+                # TODO : implement
+                pass
+            elif flow == VERIFY:
+                # TODO : implement verify mode function
+                pass
+            else:
+                print( 'ERROR : no flow matched' )
+                status_code = -1
 
         return( status_code )
 
