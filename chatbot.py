@@ -133,6 +133,8 @@ def handle_message(event):
             session['flow'] = REGISTER
         elif text.count( 'search' ) :
             session['flow'] = SEARCH
+        elif text.count( 'show' ) :
+            session['flow'] = SHOW
         # run function
         flow_swicher(event, session)
 
