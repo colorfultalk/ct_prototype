@@ -98,64 +98,25 @@ def handle_message(event):
         guestId = response.json()['id']
         session['guestId'] = guestId
 
-    if text == 'clear':
+    if text.count( 'clear' ):
+        # clear function
         for key in list(session):
             session.pop(key, None)
         print( 'session cleared' )
         show_command(event)
 
-    elif text == 'show' :
-        params      = {"guestId" : session.get('guestId')}
-        response    = api_client.search_my_guest_items( params )
-        items       = []
-
-        # set sample item
-        sample = Item(
-        	image_url = "https://s3.us-east-2.amazonaws.com/test-boto.mr-sunege.com/tmp/5qv16iyopm6idqq.jpg",
-               description = "you have not registered an item yet",
-               address = "8916-5 Takayama-cho, Ikoma, Nara 630-0192",
-               latitude = 34.732128,
-               longitude = 135.732925
-		)
-
-        if response.status_code is not 200:
-            # when search failed
-            items.append(sample)
-
-        elif len( eval(response.json()) ) == 0:
-            # when search success but no item found
-            items.append(sample)
-
-        else:
-            # when search success and some items found
-            data        = eval( response.json() )
-            data        = data[0:5] # extract latest five items
-            for i in range(len(data)):
-                item = Item(
-                    image_url   = data[i]['imgUrl'],
-                    description = data[i]['description'],
-                    address     = "8916-5 Takayama-cho, Ikoma, Nara 630-0192",
-                    latitude    = data[i]['latitude'],
-                    longitude   = data[i]['longitude']
-                )
-                items.append(item)
-
-        # show items
-        session['items'] = list(map(lambda item: item.__dict__, items))
-        reply_msg = generate_carousel_message_for_item(items)
-        line_bot_api.reply_message(event.reply_token, reply_msg)
-
     elif 'flow' not in session:
         # set flow
-        if text == 'register' :
+        if text.count( 'register' ) :
             session['flow'] = REGISTER
             register_flow.initialize(event, session)
-
-        elif text == 'search' :
+        elif text.count( 'search' ) :
             session['flow'] = SEARCH
             search_flow.handle_text_message( event, session )
-
-        elif text == 'verify' :
+        elif text.count( 'show' ) :
+            # TODO : implement
+            pass
+        elif text.count( 'verify' ):
             # TODO : implement verify mode function
             pass
         else:
@@ -170,6 +131,9 @@ def handle_message(event):
             edit_flow.handle_text_message( event, session )
         elif flow == SEARCH:
             search_flow.handle_text_message( event, session )
+        elif flow == SHOW:
+            # TODO : implement
+            pass
         elif flow == VERIFY:
             # TODO : implement verify mode function
             pass
