@@ -2,8 +2,9 @@
 # To check current flow
 REGISTER = 'REGISTER'
 EDIT     = 'EDIT'
+SHOW     = 'SHOW'
 VERIFY   = 'VERIFY'
-SEARCH = 'SEARCH'
+SEARCH   = 'SEARCH'
 
 # To check which phase a user is on
 IMAGE       = 'IMAGE'
