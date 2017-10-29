@@ -30,7 +30,7 @@ class RegisterFlow:
             "longitude"   : longitude,
             "address"     : address
         }
-        response = api_client.register_guest_item( params )
+        response = self.api_client.register_guest_item( params )
         return( response )
 
     def basic_reply( self, reply_token, next_input ):
@@ -123,7 +123,7 @@ class RegisterFlow:
                 longitude   = longitude,
                 address     = address
             )
-            print( 'register_guest_item CODE : ' + r.status_code )
+            print( r.status_code )
 
             self.show_demo( event.reply_token, session)
             session.pop('flow')
