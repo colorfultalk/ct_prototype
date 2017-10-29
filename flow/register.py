@@ -4,7 +4,6 @@ from flask import Flask, request, abort, g
 from init import *          # get constants
 from img_s3 import img_s3   # for handling image
 from template_wrapper.button import generate_button_message # original template message wrapper
-from geo_handler import geo_handler
 
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, ImageMessage, LocationMessage
@@ -22,15 +21,15 @@ class RegisterFlow:
             self.basic_reply( event.reply_token, FIRST_INPUT )
             return True
 
-    def register_guest_item( self, guestId, description, imgUrl, location ):
-        latlng = geo_handler.addr2latlng(location)
+    def register_guest_item( self, guestId, description, imgUrl, latitude, longitude, address):
         params = {
-                "guest"       : guestId,
-                "description" : description,
-                "imgUrl"      : imgUrl,
-                "latitude"    : latlng[0],
-                "longitude"   : latlng[1]
-                }
+            "guest"       : guestId,
+            "description" : description,
+            "imgUrl"      : imgUrl,
+            "latitude"    : latitude,
+            "longitude"   : longitude,
+            "address"     : address
+        }
         response = api_client.register_guest_item( params )
         return( response )
 
@@ -92,7 +91,9 @@ class RegisterFlow:
             self.basic_reply( event.reply_token, session.get('next_input') )
 
     def handle_location_message( self, event, session ):
-        location = event.message.address
+        latitude = event.message.latitude
+        longitude = event.message.longitude
+        address = event.message.address
 
         # when session is not initialized
         if 'next_input' not in session:
@@ -100,16 +101,26 @@ class RegisterFlow:
 
         elif session.get('next_input') == LOCATION:
             # location
-            print( location )
+            print( address )
 
             # set input value
-            session['LOCATION']   = location
+            session['LOCATION']   = {
+                'latitude': latitude,
+                'longitude': longitude,
+                'address': address,
+            }
             session['next_input'] = ALL_SET
 
             # register
             # session.get('LOCATION') does not work in this time
-            r = self.register_guest_item(session.get('guestId'), session.get('DESCRIPTION'),
-                    session.get('IMAGE'), location)
+            r = self.register_guest_item(
+                guestId     = session.get('guestId'),
+                description = session.get('DESCRIPTION'),
+                imgUrl      = session.get('IMAGE'),
+                latitude    = latitude,
+                longitude   = longitude,
+                address     = address
+            )
             print( r.status_code )
 
             self.basic_reply( event.reply_token, session.get('next_input') )
