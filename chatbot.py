@@ -127,8 +127,7 @@ def handle_message(event):
             print( 'WARNING : no flow selected' )
             show_command(event)
         # set flow
-        session['flow'] = flow
-        flow_swicher(event, session, flow)
+        flow_swicher(event, session)
 
     else:
         # when flow is set already
@@ -138,8 +137,7 @@ def handle_message(event):
         elif text.count( 'search' ) :
             flow = SEARCH
         # run function
-        session['flow'] = flow
-        flow_swicher(event, session, flow)
+        flow_swicher(event, session)
 
 # image handler
 @handler.add(MessageEvent, message=ImageMessage)
@@ -153,8 +151,7 @@ def handle_message(event):
 
     else:
         # when flow is set already
-        flow = session.get('flow')
-        flow_swicher(event, session, flow)
+        flow_swicher(event, session)
 
 # location handler
 @handler.add(MessageEvent, message=LocationMessage)
@@ -168,8 +165,7 @@ def handle_message(event):
 
     else:
         # when flow is set already
-        flow = session.get('flow')
-        flow_swicher(event, session, flow)
+        flow_swicher(event, session)
 
 # postback handler
 @handler.add(PostbackEvent)
@@ -180,10 +176,15 @@ def handle_postback(event):
         session['flow'] = EDIT
         edit_flow.handle_postback( event, session )
 
-def flow_swicher(event, session, flow):
+def flow_swicher(event, session):
         status_code = 1
         msg_type    = event.message.type
-        print( msg_type )
+
+        if 'flow' not in session:
+            status_code = -1
+            return( status_code )
+        else:
+            flow = session.get('flow')
 
         if msg_type == 'text':
             if flow == REGISTER:
