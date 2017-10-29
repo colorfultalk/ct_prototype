@@ -20,7 +20,7 @@ class ShowFlow:
         self.line_bot_api = line_bot_api
 
     # this means ShowFlow.showItems() function
-    def show_items(event, session):
+    def show_items(self, event, session):
         params      = {"guestId" : session.get('guestId')}
         response    = api_client.search_my_guest_items( params )
         items       = []
