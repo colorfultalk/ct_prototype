@@ -12,8 +12,9 @@ from linebot.models import (
 
 class RegisterFlow:
 
-    def __init__(self, line_bot_api):
-        self.line_bot_api = line_bot_api
+    def __init__(self, line_bot_api, api_client):
+        self.line_bot_api   = line_bot_api
+        self.api_client     = api_client
 
     # session initializer
     def initialize( self, event, session ):
@@ -31,7 +32,7 @@ class RegisterFlow:
                 "latitude"    : latlng[0],
                 "longitude"   : latlng[1]
                 }
-        response = api_client.register_guest_item( params )
+        response = self.api_client.register_guest_item( params )
         return( response )
 
     def basic_reply( self, reply_token, next_input ):
@@ -67,11 +68,7 @@ class RegisterFlow:
             # set next input
             session['next_input']  = LOCATION
             self.basic_reply( event.reply_token, session.get('next_input') )
-
-        else:
-            # when get wrong input value
-            self.basic_reply( event.reply_token, session.get('next_input') )
-
+        
     def handle_image_message( self, event, session ):
         msgId = event.message.id
         message_content = self.line_bot_api.get_message_content(msgId)

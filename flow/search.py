@@ -10,8 +10,9 @@ from pprint import pprint
 
 class SearchFlow:
 
-    def __init__(self, line_bot_api):
-        self.line_bot_api = line_bot_api
+    def __init__(self, line_bot_api, api_client):
+        self.line_bot_api   = line_bot_api
+        self.api_client     = api_client
 
     def show_items(self, reply_token, items):
         reply_msg = generate_carousel_message_for_item(items)
@@ -47,7 +48,7 @@ class SearchFlow:
             "longitude"   : event.message.longitude
         }
 
-        response    = api_client.retrieve_guest_items(params)
+        response    = self.api_client.retrieve_guest_items(params)
         datas       = eval( response.json() )[-5:]
         print()
         print("response:")
