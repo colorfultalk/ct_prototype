@@ -107,29 +107,29 @@ def handle_message(event):
         print( 'session cleared' )
         show_command(event)
 
-    elif 'flow' not in session:
-        if text.count( 'register' ) :
-            flow = REGISTER
-            register_flow.initialize(event, session)
-        elif text.count( 'search' ) :
-            flow = SEARCH
-            search_flow.handle_text_message( event, session )
-        elif text.count( 'show' ) :
-            flow = SHOW
-        elif text.count( 'verify' ):
-            # TODO : implement verify mode function
-            pass
-        else:
-            print( 'WARNING : no flow selected' )
-            show_command(event)
-        # set flow
-        session['flow'] = flow
-        flow_swicher(event, session, flow)
+    if text.count( 'register' ) :
+        flow = REGISTER
+        register_flow.initialize(event, session)
+
+    elif text.count( 'search' ) :
+        flow = SEARCH
+        search_flow.handle_text_message( event, session )
+
+    elif text.count( 'show' ) :
+        flow = SHOW
+
+    elif text.count( 'verify' ):
+        # TODO : implement verify mode function
+        pass
 
     else:
-        # when flow is set already
-        flow = session.get('flow')
-        flow_swicher(event, session, flow)
+        print( 'WARNING : no flow selected' )
+        flow = 'None'
+        show_command(event)
+
+    # set flow
+    session['flow'] = flow
+    flow_swicher(event, session, flow)
 
 # image handler
 @handler.add(MessageEvent, message=ImageMessage)
