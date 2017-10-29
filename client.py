@@ -128,7 +128,7 @@ class Client:
                 "price":       price,
                 "description": description,
                 "imgUrl":      imgUrl,
-                "host":        host
+                "host":        host,
                 "longitude":   longitude,
                 "latitude":    latitude,
                 "address":     address
