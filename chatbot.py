@@ -113,13 +113,13 @@ def handle_message(event):
 
     elif 'flow' not in session:
         if text.count( 'register' ) :
-            flow = REGISTER
+            session['flow'] = REGISTER
             register_flow.initialize(event, session)
         elif text.count( 'search' ) :
-            flow = SEARCH
+            session['flow'] = SEARCH
             search_flow.handle_text_message( event, session )
         elif text.count( 'show' ) :
-            flow = SHOW
+            session['flow'] = SHOW
         elif text.count( 'verify' ):
             # TODO : implement verify mode function
             pass
@@ -133,9 +133,9 @@ def handle_message(event):
         # when flow is set already
         flow = session.get('flow')
         if text.count( 'register' ) :
-            flow = REGISTER
+            session['flow'] = REGISTER
         elif text.count( 'search' ) :
-            flow = SEARCH
+            session['flow'] = SEARCH
         # run function
         flow_swicher(event, session)
 
