@@ -32,14 +32,20 @@ line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
 parser  = WebhookParser(channel_secret)
 
+# initialize client for api_server
+from client import Client
+api_client = Client(USERNAME, PASSWORD)
+
 # import all flow
-from flow.register import RegisterFlow
-from flow.edit import EditFlow
-from flow.search import SearchFlow
+from flow.register  import RegisterFlow
+from flow.edit      import EditFlow
+from flow.search    import SearchFlow
+from flow.show      import ShowFlow
 # initialize all flow
-register_flow = RegisterFlow( line_bot_api )
-edit_flow = EditFlow( line_bot_api )
-search_flow = SearchFlow( line_bot_api )
+register_flow   = RegisterFlow( line_bot_api, api_client)
+edit_flow       = EditFlow( line_bot_api )
+search_flow     = SearchFlow( line_bot_api, api_client )
+show_flow       = ShowFlow( line_bot_api, api_client )
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -98,83 +104,42 @@ def handle_message(event):
         guestId = response.json()['id']
         session['guestId'] = guestId
 
-    if text == 'clear':
+    if text.count( 'clear' ):
+        # clear function
         for key in list(session):
             session.pop(key, None)
         print( 'session cleared' )
         show_command(event)
 
-    elif text == 'show' :
-        params      = {"guestId" : session.get('guestId')}
-        response    = api_client.search_my_guest_items( params )
-        items       = []
-
-        # set sample item
-        sample = Item(
-        	image_url = "https://s3.us-east-2.amazonaws.com/test-boto.mr-sunege.com/tmp/5qv16iyopm6idqq.jpg",
-               description = "you have not registered an item yet",
-               address = "8916-5 Takayama-cho, Ikoma, Nara 630-0192",
-               latitude = 34.732128,
-               longitude = 135.732925
-		)
-
-        if response.status_code is not 200:
-            # when search failed
-            items.append(sample)
-
-        elif len( eval(response.json()) ) == 0:
-            # when search success but no item found
-            items.append(sample)
-
-        else:
-            # when search success and some items found
-            data        = eval( response.json() )
-            data        = data[0:5] # extract latest five items
-            for i in range(len(data)):
-                item = Item(
-                    image_url   = data[i]['imgUrl'],
-                    description = data[i]['description'],
-                    address     = "8916-5 Takayama-cho, Ikoma, Nara 630-0192",
-                    latitude    = data[i]['latitude'],
-                    longitude   = data[i]['longitude']
-                )
-                items.append(item)
-
-        # show items
-        session['items'] = list(map(lambda item: item.__dict__, items))
-        reply_msg = generate_carousel_message_for_item(items)
-        line_bot_api.reply_message(event.reply_token, reply_msg)
-
     elif 'flow' not in session:
-        # set flow
-        if text == 'register' :
-            session['flow'] = REGISTER
+        if text.count( 'register' ) :
+            flow = REGISTER
             register_flow.initialize(event, session)
-
-        elif text == 'search' :
-            session['flow'] = SEARCH
+        elif text.count( 'search' ) :
+            flow = SEARCH
             search_flow.handle_text_message( event, session )
-
-        elif text == 'verify' :
+        elif text.count( 'show' ) :
+            flow = SHOW
+        elif text.count( 'verify' ):
             # TODO : implement verify mode function
             pass
         else:
             print( 'WARNING : no flow selected' )
             show_command(event)
+        # set flow
+        session['flow'] = flow
+        flow_swicher(event, session, flow)
+
     else:
         # when flow is set already
         flow = session.get('flow')
-        if flow == REGISTER:
-            register_flow.handle_text_message( event, session )
-        elif flow == EDIT:
-            edit_flow.handle_text_message( event, session )
-        elif flow == SEARCH:
-            search_flow.handle_text_message( event, session )
-        elif flow == VERIFY:
-            # TODO : implement verify mode function
-            pass
-        else:
-            print( 'ERROR : no flow matched' )
+        if text.count( 'register' ) :
+            flow = REGISTER
+        elif text.count( 'search' ) :
+            flow = SEARCH
+        # run function
+        session['flow'] = flow
+        flow_swicher(event, session, flow)
 
 # image handler
 @handler.add(MessageEvent, message=ImageMessage)
@@ -189,18 +154,7 @@ def handle_message(event):
     else:
         # when flow is set already
         flow = session.get('flow')
-        if flow == REGISTER:
-            register_flow.handle_image_message( event, session )
-
-        elif flow == EDIT:
-            edit_flow.handle_image_message( event, session )
-
-        elif flow == VERIFY:
-            # TODO : implement verify mode function
-            pass
-
-        else:
-            print( 'ERROR : no flow matched' )
+        flow_swicher(event, session, flow)
 
 # location handler
 @handler.add(MessageEvent, message=LocationMessage)
@@ -211,35 +165,75 @@ def handle_message(event):
         # when flow is not set
         print( 'WARNING : no flow selected' )
         show_command(event)
+
     else:
         # when flow is set already
         flow = session.get('flow')
-        if flow == REGISTER:
-            register_flow.handle_location_message( event, session )
-
-        elif flow == EDIT:
-            edit_flow.handle_location_message( event, session )
-
-        elif flow == SEARCH:
-            search_flow.handle_location_message( event, session )
-
-        elif flow == VERIFY:
-            # TODO : implement verify mode function
-            pass
-
-        else:
-            print( 'ERROR : no flow matched' )
+        flow_swicher(event, session, flow)
 
 # postback handler
 @handler.add(PostbackEvent)
 def handle_postback(event):
     session = getattr(g, 'session', None)
     flow = event.postback.data.split('&')[0]
-
     if flow == 'edit':
         session['flow'] = EDIT
         edit_flow.handle_postback( event, session )
 
+def flow_swicher(event, session, flow):
+        status_code = 1
+        msg_type    = event.message.type
+        print( msg_type )
+
+        if msg_type == 'text':
+            if flow == REGISTER:
+                register_flow.handle_text_message( event, session )
+            elif flow == EDIT:
+                edit_flow.handle_text_message( event, session )
+            elif flow == SEARCH:
+                search_flow.handle_text_message( event, session )
+            elif flow == SHOW:
+                show_flow.show_items(event, session)
+            elif flow == VERIFY:
+                # TODO : implement verify mode function
+                pass
+            else:
+                print( 'ERROR : no flow matched' )
+                status_code = -1
+
+        if msg_type == 'image':
+            if flow == REGISTER:
+                register_flow.handle_image_message( event, session )
+            elif flow == EDIT:
+                edit_flow.handle_image_message( event, session )
+            elif flow == SEARCH:
+                search_flow.handle_image_message( event, session )
+            elif flow == SHOW:
+                show_flow.show_items(event, session)
+            elif flow == VERIFY:
+                # TODO : implement verify mode function
+                pass
+            else:
+                print( 'ERROR : no flow matched' )
+                status_code = -1
+
+        if msg_type == 'location':
+            if flow == REGISTER:
+                register_flow.handle_location_message( event, session )
+            elif flow == EDIT:
+                edit_flow.handle_location_message( event, session )
+            elif flow == SEARCH:
+                search_flow.handle_location_message( event, session )
+            elif flow == SHOW:
+                show_flow.show_items(event, session)
+            elif flow == VERIFY:
+                # TODO : implement verify mode function
+                pass
+            else:
+                print( 'ERROR : no flow matched' )
+                status_code = -1
+
+        return( status_code )
 
 def show_command(event):
     reply_text = "Command\n register / show / search / verify"
