@@ -114,10 +114,8 @@ def handle_message(event):
     elif 'flow' not in session:
         if text.count( 'register' ) :
             session['flow'] = REGISTER
-            register_flow.initialize(event, session)
         elif text.count( 'search' ) :
             session['flow'] = SEARCH
-            search_flow.handle_text_message( event, session )
         elif text.count( 'show' ) :
             session['flow'] = SHOW
         elif text.count( 'verify' ):
@@ -131,7 +129,6 @@ def handle_message(event):
 
     else:
         # when flow is set already
-        flow = session.get('flow')
         if text.count( 'register' ) :
             session['flow'] = REGISTER
         elif text.count( 'search' ) :
