@@ -45,7 +45,7 @@ from flow.show      import ShowFlow
 register_flow   = RegisterFlow( line_bot_api, api_client)
 edit_flow       = EditFlow( line_bot_api )
 search_flow     = SearchFlow( line_bot_api, api_client )
-show_flow       = ShowFlow( line_bot_api )
+show_flow       = ShowFlow( line_bot_api, api_client )
 
 @app.route("/callback", methods=['POST'])
 def callback():

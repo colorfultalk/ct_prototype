@@ -16,8 +16,9 @@ class ShowFlow:
             longitude = 135.732925
     )
 
-    def __init__(self, line_bot_api):
-        self.line_bot_api = line_bot_api
+    def __init__(self, line_bot_api, api_client):
+        self.line_bot_api   = line_bot_api
+        self.api_client     = api_client
 
     # this means ShowFlow.showItems() function
     def show_items(self, event, session):
