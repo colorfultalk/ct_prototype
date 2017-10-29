@@ -68,11 +68,7 @@ class RegisterFlow:
             # set next input
             session['next_input']  = LOCATION
             self.basic_reply( event.reply_token, session.get('next_input') )
-
-        else:
-            # when get wrong input value
-            self.basic_reply( event.reply_token, session.get('next_input') )
-
+        
     def handle_image_message( self, event, session ):
         msgId = event.message.id
         message_content = self.line_bot_api.get_message_content(msgId)
