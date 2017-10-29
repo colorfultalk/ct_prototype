@@ -50,4 +50,4 @@ class ShowFlow:
         # show items
         # session['items'] = list(map(lambda item: item.__dict__, items))
         reply_msg = generate_carousel_message_for_item(items)
-        line_bot_api.reply_message(event.reply_token, reply_msg)
+        self.line_bot_api.reply_message(event.reply_token, reply_msg)
