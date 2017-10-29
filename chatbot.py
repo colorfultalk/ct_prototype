@@ -32,15 +32,19 @@ line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
 parser  = WebhookParser(channel_secret)
 
+# initialize client for api_server
+from client import Client
+api_client = Client(USERNAME, PASSWORD)
+
 # import all flow
 from flow.register  import RegisterFlow
 from flow.edit      import EditFlow
 from flow.search    import SearchFlow
 from flow.show      import ShowFlow
 # initialize all flow
-register_flow   = RegisterFlow( line_bot_api )
+register_flow   = RegisterFlow( line_bot_api, api_client)
 edit_flow       = EditFlow( line_bot_api )
-search_flow     = SearchFlow( line_bot_api )
+search_flow     = SearchFlow( line_bot_api, api_client )
 show_flow       = ShowFlow( line_bot_api )
 
 @app.route("/callback", methods=['POST'])

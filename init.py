@@ -18,10 +18,6 @@ APPNAME = 'still-refuge-57534'
 USERNAME = 'u19022'
 PASSWORD = 'naistnaist'
 
-# initialize client for api_server
-from client import Client
-api_client = Client(USERNAME, PASSWORD)
-
 # set aws s3 bucket
 import boto3 # for handling aws s3
 BUCKET_NAME = 'ct-prototype'
