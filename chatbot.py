@@ -122,23 +122,11 @@ def handle_message(event):
         else:
             print( 'WARNING : no flow selected' )
             show_command(event)
+
     else:
         # when flow is set already
         flow = session.get('flow')
-        if flow == REGISTER:
-            register_flow.handle_text_message( event, session )
-        elif flow == EDIT:
-            edit_flow.handle_text_message( event, session )
-        elif flow == SEARCH:
-            search_flow.handle_text_message( event, session )
-        elif flow == SHOW:
-            # TODO : implement
-            pass
-        elif flow == VERIFY:
-            # TODO : implement verify mode function
-            pass
-        else:
-            print( 'ERROR : no flow matched' )
+        flow_swicher(event, session, flow)
 
 # image handler
 @handler.add(MessageEvent, message=ImageMessage)
@@ -153,18 +141,7 @@ def handle_message(event):
     else:
         # when flow is set already
         flow = session.get('flow')
-        if flow == REGISTER:
-            register_flow.handle_image_message( event, session )
-
-        elif flow == EDIT:
-            edit_flow.handle_image_message( event, session )
-
-        elif flow == VERIFY:
-            # TODO : implement verify mode function
-            pass
-
-        else:
-            print( 'ERROR : no flow matched' )
+        flow_swicher(event, session, flow)
 
 # location handler
 @handler.add(MessageEvent, message=LocationMessage)
@@ -175,9 +152,24 @@ def handle_message(event):
         # when flow is not set
         print( 'WARNING : no flow selected' )
         show_command(event)
+
     else:
         # when flow is set already
         flow = session.get('flow')
+        flow_swicher(event, session, flow)
+
+# postback handler
+@handler.add(PostbackEvent)
+def handle_postback(event):
+    session = getattr(g, 'session', None)
+    flow = event.postback.data.split('&')[0]
+    if flow == 'edit':
+        session['flow'] = EDIT
+        edit_flow.handle_postback( event, session )
+
+def flow_swicher(event, session, flow):
+        status_code = 1;
+
         if flow == REGISTER:
             register_flow.handle_location_message( event, session )
 
@@ -187,23 +179,19 @@ def handle_message(event):
         elif flow == SEARCH:
             search_flow.handle_location_message( event, session )
 
+        elif flow == SHOW:
+            # TODO : implement
+            pass
+
         elif flow == VERIFY:
             # TODO : implement verify mode function
             pass
 
         else:
             print( 'ERROR : no flow matched' )
+            status_code = -1
 
-# postback handler
-@handler.add(PostbackEvent)
-def handle_postback(event):
-    session = getattr(g, 'session', None)
-    flow = event.postback.data.split('&')[0]
-
-    if flow == 'edit':
-        session['flow'] = EDIT
-        edit_flow.handle_postback( event, session )
-
+        return( status_code )
 
 def show_command(event):
     reply_text = "Command\n register / show / search / verify"
