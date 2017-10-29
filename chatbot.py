@@ -33,13 +33,15 @@ handler = WebhookHandler(channel_secret)
 parser  = WebhookParser(channel_secret)
 
 # import all flow
-from flow.register import RegisterFlow
-from flow.edit import EditFlow
-from flow.search import SearchFlow
+from flow.register  import RegisterFlow
+from flow.edit      import EditFlow
+from flow.search    import SearchFlow
+from flow.show      import ShowFlow
 # initialize all flow
-register_flow = RegisterFlow( line_bot_api )
-edit_flow = EditFlow( line_bot_api )
-search_flow = SearchFlow( line_bot_api )
+register_flow   = RegisterFlow( line_bot_api )
+edit_flow       = EditFlow( line_bot_api )
+search_flow     = SearchFlow( line_bot_api )
+show_flow       = ShowFlow( line_bot_api )
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -106,22 +108,23 @@ def handle_message(event):
         show_command(event)
 
     elif 'flow' not in session:
-        # set flow
         if text.count( 'register' ) :
-            session['flow'] = REGISTER
+            flow = REGISTER
             register_flow.initialize(event, session)
         elif text.count( 'search' ) :
-            session['flow'] = SEARCH
+            flow = SEARCH
             search_flow.handle_text_message( event, session )
         elif text.count( 'show' ) :
-            # TODO : implement
-            pass
+            flow = SHOW
         elif text.count( 'verify' ):
             # TODO : implement verify mode function
             pass
         else:
             print( 'WARNING : no flow selected' )
             show_command(event)
+        # set flow
+        session['flow'] = flow
+        flow_swicher(event, session, flow)
 
     else:
         # when flow is set already
@@ -180,8 +183,7 @@ def flow_swicher(event, session, flow):
             elif flow == SEARCH:
                 search_flow.handle_text_message( event, session )
             elif flow == SHOW:
-                # TODO : implement
-                pass
+                show_flow.show_items(event, session)
             elif flow == VERIFY:
                 # TODO : implement verify mode function
                 pass
@@ -197,8 +199,7 @@ def flow_swicher(event, session, flow):
             elif flow == SEARCH:
                 search_flow.handle_image_message( event, session )
             elif flow == SHOW:
-                # TODO : implement
-                pass
+                show_flow.show_items(event, session)
             elif flow == VERIFY:
                 # TODO : implement verify mode function
                 pass
@@ -214,8 +215,7 @@ def flow_swicher(event, session, flow):
             elif flow == SEARCH:
                 search_flow.handle_location_message( event, session )
             elif flow == SHOW:
-                # TODO : implement
-                pass
+                show_flow.show_items(event, session)
             elif flow == VERIFY:
                 # TODO : implement verify mode function
                 pass
