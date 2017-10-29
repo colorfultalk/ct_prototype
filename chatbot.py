@@ -168,7 +168,9 @@ def handle_postback(event):
         edit_flow.handle_postback( event, session )
 
 def flow_swicher(event, session, flow):
-        status_code = 1;
+        status_code = 1
+        msg_type    = event.message.type
+        print( msg_type )
 
         if flow == REGISTER:
             register_flow.handle_location_message( event, session )
