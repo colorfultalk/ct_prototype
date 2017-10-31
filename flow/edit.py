@@ -1,3 +1,4 @@
+import ast
 from flask import Flask, request, abort, g
 from init import *          # get constants
 from img_s3 import img_s3   # for handling image
@@ -118,7 +119,8 @@ class EditFlow:
             self.basic_reply(event.reply_token, session.get('edit_target'))
 
     def handle_postback(self, event, session):
-        session['edit_item_index'] = event.postback.data.split('&')[1]
+        postback_data = ast.literal_eval(event.postback.data)
+        session['edit_item_index'] = postback_data['edit_item_index']
 
         self.basic_reply(event.reply_token, None)
 

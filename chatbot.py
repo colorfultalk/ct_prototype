@@ -1,6 +1,7 @@
 from flask import Flask, request, abort, g
 import os
 import sys
+import ast
 from linebot import (
     LineBotApi, WebhookHandler, WebhookParser
 )
@@ -175,7 +176,8 @@ def handle_message(event):
 @handler.add(PostbackEvent)
 def handle_postback(event):
     session = getattr(g, 'session', None)
-    flow = event.postback.data.split('&')[0]
+    postback_data = ast.literal_eval(event.postback.data)
+    flow = postback_data['message_type']
     if flow == 'edit':
         session['flow'] = EDIT
         edit_flow.handle_postback( event, session )

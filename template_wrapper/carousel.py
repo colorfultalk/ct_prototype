@@ -11,9 +11,13 @@ def generate_carousel_message_for_item(items):
     columns = []
     for i in range(len(items)):
         item = items[i]
+        data = {
+            'message_type': 'edit',
+            'edit_item_index': i
+        }
         column = CarouselColumn(text=item.description, thumbnail_image_url=item.image_url, actions=[
             PostbackTemplateAction(
-                label='edit', data="edit&" + str(i)),
+                label='edit', data=str(data)),
         ])
         columns.append(column)
 
