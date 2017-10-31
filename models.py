@@ -25,7 +25,8 @@ class Session(BaseModel):
     expiration = DateTimeField()
 
 class Item:
-    def __init__(self, image_url=None, description=None, address=None, latitude=None, longitude=None):
+    def __init__(self, id=None, image_url=None, description=None, address=None, latitude=None, longitude=None):
+        self.id = id
         self.image_url = image_url
         self.description = description
         self.address = address
