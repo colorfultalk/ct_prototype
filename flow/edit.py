@@ -12,8 +12,9 @@ from linebot.models import (
 
 class EditFlow:
 
-    def __init__(self, line_bot_api):
+    def __init__(self, line_bot_api, api_client):
         self.line_bot_api = line_bot_api
+        self.api_client   = api_client
 
     def basic_reply(self, reply_token, edit_target):
         session = getattr(g, 'session', None)
@@ -52,6 +53,14 @@ class EditFlow:
             return
 
         session['items'][index][key] = new_data
+
+        # send new data to api server
+        params = {
+            'itemId': session['items'][index]['id'],
+            key: new_data
+        }
+        response = self.api_client.edit_my_guest_item(params)
+        print(response)
 
 
     def handle_text_message(self, event, session):

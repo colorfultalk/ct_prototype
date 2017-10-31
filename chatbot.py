@@ -43,8 +43,8 @@ from flow.edit      import EditFlow
 from flow.search    import SearchFlow
 from flow.show      import ShowFlow
 # initialize all flow
-register_flow   = RegisterFlow( line_bot_api, api_client)
-edit_flow       = EditFlow( line_bot_api )
+register_flow   = RegisterFlow( line_bot_api, api_client )
+edit_flow       = EditFlow( line_bot_api, api_client )
 search_flow     = SearchFlow( line_bot_api, api_client )
 show_flow       = ShowFlow( line_bot_api, api_client )
 
