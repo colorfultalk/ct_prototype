@@ -222,3 +222,29 @@ class Client:
                 }
         response = requests.get(url, params = obj, headers = headers)
         return response
+
+    def edit_my_guest_item(self, params):
+        """
+        CALL /api/guest-items/${itemId}/
+        """
+
+        itemId  = params["itemId"]
+        token   = self.get_token()
+        url     = base_url + "api/guest-items/" + str(itemId) + "/"
+        headers = { "Content-Type" : "application/json" ,
+                    "Authorization" : 'JWT {}'.format(token) }
+        obj     = {}
+        if 'description' in params:
+            obj['description'] = params['description']
+        if 'imgUrl' in params:
+            obj['imgUrl'] = params['imgUrl']
+        if 'latitude' in params:
+            obj['latitude'] = params['latitude']
+        if 'longitude' in params:
+            obj['longitude'] = params['longitude']
+        if 'address' in params:
+            obj['address'] = params['address']
+
+        data = json.dumps(obj).encode("utf-8")
+        response = requests.put(url, data, headers = headers)
+        return response
