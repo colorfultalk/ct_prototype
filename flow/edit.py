@@ -1,3 +1,4 @@
+import ast
 from flask import Flask, request, abort, g
 from init import *          # get constants
 from img_s3 import img_s3   # for handling image
@@ -11,8 +12,9 @@ from linebot.models import (
 
 class EditFlow:
 
-    def __init__(self, line_bot_api):
+    def __init__(self, line_bot_api, api_client):
         self.line_bot_api = line_bot_api
+        self.api_client   = api_client
 
     def basic_reply(self, reply_token, edit_target):
         session = getattr(g, 'session', None)
@@ -51,6 +53,14 @@ class EditFlow:
             return
 
         session['items'][index][key] = new_data
+
+        # send new data to api server
+        params = {
+            'itemId': session['items'][index]['id'],
+            key: new_data
+        }
+        response = self.api_client.edit_my_guest_item(params)
+        print(response)
 
 
     def handle_text_message(self, event, session):
@@ -118,7 +128,8 @@ class EditFlow:
             self.basic_reply(event.reply_token, session.get('edit_target'))
 
     def handle_postback(self, event, session):
-        session['edit_item_index'] = event.postback.data.split('&')[1]
+        postback_data = ast.literal_eval(event.postback.data)
+        session['edit_item_index'] = postback_data['edit_item_index']
 
         self.basic_reply(event.reply_token, None)
 

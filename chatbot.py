@@ -1,6 +1,7 @@
 from flask import Flask, request, abort, g
 import os
 import sys
+import ast
 from linebot import (
     LineBotApi, WebhookHandler, WebhookParser
 )
@@ -42,8 +43,8 @@ from flow.edit      import EditFlow
 from flow.search    import SearchFlow
 from flow.show      import ShowFlow
 # initialize all flow
-register_flow   = RegisterFlow( line_bot_api, api_client)
-edit_flow       = EditFlow( line_bot_api )
+register_flow   = RegisterFlow( line_bot_api, api_client )
+edit_flow       = EditFlow( line_bot_api, api_client )
 search_flow     = SearchFlow( line_bot_api, api_client )
 show_flow       = ShowFlow( line_bot_api, api_client )
 
@@ -170,7 +171,8 @@ def handle_message(event):
 @handler.add(PostbackEvent)
 def handle_postback(event):
     session = getattr(g, 'session', None)
-    flow = event.postback.data.split('&')[0]
+    postback_data = ast.literal_eval(event.postback.data)
+    flow = postback_data['message_type']
     if flow == 'edit':
         session['flow'] = EDIT
         edit_flow.handle_postback( event, session )
