@@ -20,7 +20,6 @@ class RegisterFlow:
             FIRST_INPUT = IMAGE # set first input
             session['next_input'] = FIRST_INPUT
             self.basic_reply( event.reply_token, FIRST_INPUT )
-            return True
 
     def register_guest_item( self, guestId, description, imgUrl, latitude, longitude, address):
         params = {
@@ -31,23 +30,25 @@ class RegisterFlow:
             "longitude"   : longitude,
             "address"     : address
         }
-        response = api_client.register_guest_item( params )
+        response = self.api_client.register_guest_item( params )
         return( response )
 
     def basic_reply( self, reply_token, next_input ):
-        session = getattr(g, 'session', None)
+        reply_text = 'please input ' + next_input + ' next !'
+        reply_msg  = TextSendMessage( text = reply_text )
+        # reply
+        self.line_bot_api.reply_message(
+            reply_token,
+            reply_msg
+        )
 
-        # set reply_text
-        if next_input == ALL_SET:
-            # if everything set then display demo
-            reply_msg = generate_button_message(
-                        text = session.get('DESCRIPTION'),
-                        thumbnail_image_url = session.get('IMAGE')
-                    )
-        else:
-            reply_text = 'please input ' + next_input + ' next !'
-            reply_msg  = TextSendMessage( text = reply_text )
-
+    # call when all inputs are set properly
+    def show_demo( self, reply_token, session):
+        # if everything set then display demo
+        reply_msg = generate_button_message(
+                    text = session.get('DESCRIPTION'),
+                    thumbnail_image_url = session.get('IMAGE')
+                )
         # reply
         self.line_bot_api.reply_message(
             reply_token,
@@ -60,14 +61,18 @@ class RegisterFlow:
         # when session is not initialized
         if 'next_input' not in session:
             self.initialize( event, session )
+        else:
+            next_input = session.get('next_input')
+            if next_input == DESCRIPTION:
+                # set input value to session
+                session['DESCRIPTION'] = text
+                # set next input
+                session['next_input']  = LOCATION
+                self.basic_reply( event.reply_token, session.get('next_input') )
+            else:
+                # when get wrong input value
+                self.basic_reply( event.reply_token, next_input )
 
-        elif session.get('next_input') == DESCRIPTION:
-            # set input value to session
-            session['DESCRIPTION'] = text
-            # set next input
-            session['next_input']  = LOCATION
-            self.basic_reply( event.reply_token, session.get('next_input') )
-        
     def handle_image_message( self, event, session ):
         msgId = event.message.id
         message_content = self.line_bot_api.get_message_content(msgId)
@@ -120,8 +125,7 @@ class RegisterFlow:
             )
             print( r.status_code )
 
-            self.basic_reply( event.reply_token, session.get('next_input') )
-            # reset flow value
+            self.show_demo( event.reply_token, session)
             session.pop('flow')
             session.pop('next_input')
 

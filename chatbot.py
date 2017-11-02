@@ -113,13 +113,11 @@ def handle_message(event):
 
     elif 'flow' not in session:
         if text.count( 'register' ) :
-            flow = REGISTER
-            register_flow.initialize(event, session)
+            session['flow'] = REGISTER
         elif text.count( 'search' ) :
-            flow = SEARCH
-            search_flow.handle_text_message( event, session )
+            session['flow'] = SEARCH
         elif text.count( 'show' ) :
-            flow = SHOW
+            session['flow'] = SHOW
         elif text.count( 'verify' ):
             # TODO : implement verify mode function
             pass
@@ -127,19 +125,18 @@ def handle_message(event):
             print( 'WARNING : no flow selected' )
             show_command(event)
         # set flow
-        session['flow'] = flow
-        flow_swicher(event, session, flow)
+        flow_swicher(event, session)
 
     else:
         # when flow is set already
-        flow = session.get('flow')
         if text.count( 'register' ) :
-            flow = REGISTER
+            session['flow'] = REGISTER
         elif text.count( 'search' ) :
-            flow = SEARCH
+            session['flow'] = SEARCH
+        elif text.count( 'show' ) :
+            session['flow'] = SHOW
         # run function
-        session['flow'] = flow
-        flow_swicher(event, session, flow)
+        flow_swicher(event, session)
 
 # image handler
 @handler.add(MessageEvent, message=ImageMessage)
@@ -153,8 +150,7 @@ def handle_message(event):
 
     else:
         # when flow is set already
-        flow = session.get('flow')
-        flow_swicher(event, session, flow)
+        flow_swicher(event, session)
 
 # location handler
 @handler.add(MessageEvent, message=LocationMessage)
@@ -168,8 +164,7 @@ def handle_message(event):
 
     else:
         # when flow is set already
-        flow = session.get('flow')
-        flow_swicher(event, session, flow)
+        flow_swicher(event, session)
 
 # postback handler
 @handler.add(PostbackEvent)
@@ -180,10 +175,15 @@ def handle_postback(event):
         session['flow'] = EDIT
         edit_flow.handle_postback( event, session )
 
-def flow_swicher(event, session, flow):
+def flow_swicher(event, session):
         status_code = 1
         msg_type    = event.message.type
-        print( msg_type )
+
+        if 'flow' not in session:
+            status_code = -1
+            return( status_code )
+        else:
+            flow = session.get('flow')
 
         if msg_type == 'text':
             if flow == REGISTER:
