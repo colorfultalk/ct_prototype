@@ -28,11 +28,11 @@ class ShowFlow:
 
         if response.status_code is not 200:
             # when search failed
-            items.append(sample)
+            items.append(self.sample)
 
         elif len( eval(response.json()) ) == 0:
             # when search success but no item found
-            items.append(sample)
+            items.append(self.sample)
 
         else:
             # when search success and some items found
