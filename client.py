@@ -248,3 +248,14 @@ class Client:
         data = json.dumps(obj).encode("utf-8")
         response = requests.put(url, data, headers = headers)
         return response
+
+    def exists(self, url):
+        response = requests.get(url)
+        if response.status_code is 200:
+            print(url + ' is exist')
+            return True
+        else:
+            print(url + ' is not found')
+            print(response.status_code)
+            return False
+

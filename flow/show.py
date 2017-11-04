@@ -39,9 +39,10 @@ class ShowFlow:
             data        = eval( response.json() )
             data        = data[-5:] # extract latest five items
             for i in range(len(data)):
+                image_url = self.set_image_url(data[i]['imgUrl'])
                 item = Item(
                     id = data[i]['id'],
-                    image_url   = data[i]['imgUrl'],
+                    image_url   = image_url,
                     description = data[i]['description'],
                     address     = "8916-5 Takayama-cho, Ikoma, Nara 630-0192",
                     latitude    = data[i]['latitude'],
@@ -53,3 +54,10 @@ class ShowFlow:
         session['items'] = list(map(lambda item: item.__dict__, items))
         reply_msg = generate_carousel_message_for_item(items)
         self.line_bot_api.reply_message(event.reply_token, reply_msg)
+
+    def set_image_url(self, url):
+        if self.api_client.exists(url):
+            return url
+        else:
+            return 'https://s3.us-east-2.amazonaws.com/test-boto.mr-sunege.com/tmp/not_found.jpeg'
+
