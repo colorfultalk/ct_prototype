@@ -33,7 +33,10 @@ def retrieve_image_from_content( msg_content , save_img_size = (1000, 680) ):
     return( pil_img )
 
 # upload s3
-def upload_to_s3( msg_content, s3_bucket, obj_key_name = random_string(15) ):
+def upload_to_s3( msg_content, s3_bucket ):
+    # set key
+    obj_key_name = random_string(15)
+    print( obj_key_name )
 
     # retrieve image
     pil_img = retrieve_image_from_content( msg_content )
