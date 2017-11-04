@@ -10,8 +10,8 @@ s3 = boto3.client('s3')
 IMG_EXPIREIN = 3600 * 24 * 365 # 3600 means 1 hour
 
 def random_string(length, seq='0123456789abcdefghijklmnopqrstuvwxyz'):
-    sr = random.SystemRandom()
-    return ''.join([sr.choice(seq) for i in range(length)])
+    random.seed()
+    return ''.join([random.choice(seq) for i in range(length)])
 
 # retrieve image that user sent from line message content
 def retrieve_image_from_content( msg_content , save_img_size = (1000, 680) ):
