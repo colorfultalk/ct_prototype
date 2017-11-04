@@ -4,6 +4,7 @@ from flask import Flask, request, abort, g
 from init import *          # get constants
 from img_s3 import img_s3   # for handling image
 from template_wrapper.button import generate_button_message # original template message wrapper
+import static_message
 
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, ImageMessage, LocationMessage
@@ -34,9 +35,18 @@ class RegisterFlow:
         return( response )
 
     def basic_reply( self, reply_token, next_input ):
-        reply_text = 'please input ' + next_input + ' next !'
-        reply_msg  = TextSendMessage( text = reply_text )
+        # select reply message
+        reply_text = ''
+        if next_input == IMAGE:
+            reply_text = static_message.BASIC_REPLY_IMAGE
+        elif next_input == DESCRIPTION:
+            reply_text = static_message.BASIC_REPLY_DESCRIPTION
+        elif next_input == LOCATION:
+            reply_text = static_message.BASIC_REPLY_LOCATION
+        else :
+            print( 'error' )
         # reply
+        reply_msg  = TextSendMessage( text = reply_text )
         self.line_bot_api.reply_message(
             reply_token,
             reply_msg

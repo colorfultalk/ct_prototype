@@ -5,6 +5,7 @@ from img_s3 import img_s3   # for handling image
 from template_wrapper.button import generate_button_message # original template message wrapper
 from template_wrapper.carousel import generate_carousel_message_for_item # original template message wrapper
 from models import Item
+import static_message
 
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, ImageMessage, LocationMessage
@@ -21,11 +22,19 @@ class EditFlow:
 
         # set reply_text
         if edit_target is None:
-            reply_text = "Select a edit target\n image / description / location"
+            reply_text = static_message.SELECT_EDIT_TARGET
             reply_msg = TextSendMessage(text=reply_text)
 
         else:
-            reply_text = 'please input a new ' + edit_target
+            reply_text = ''
+            if edit_target == IMAGE:
+                reply_text = static_message.EDIT_IMAGE
+            elif edit_target == DESCRIPTION:
+                reply_text = static_message.EDIT_DESCRIPTION
+            elif edit_target == LOCATION:
+                reply_text = static_message.EDIT_LOCATION
+            else :
+                print( 'error' )
             reply_msg  = TextSendMessage( text = reply_text )
 
         # reply
