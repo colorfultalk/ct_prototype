@@ -7,6 +7,7 @@ from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, LocationMessage
 )
 from pprint import pprint
+import static_message
 
 class SearchFlow:
 
@@ -32,7 +33,7 @@ class SearchFlow:
 
     def handle_text_message(self, event, session):
         reply_token = event.reply_token
-        reply_text = 'Please input your location.'
+        reply_text = static_message.REQUEST_CURRENT_LOCATION
         reply_msg  = TextSendMessage(text=reply_text)
 
         # reply
@@ -63,7 +64,7 @@ class SearchFlow:
 
         else:
             # when no data is found
-            reply_text = 'No item found around here ;('
+            reply_text = static_message.NO_ITEM_FOUND
             reply_msg  = TextSendMessage(text=reply_text)
             self.line_bot_api.reply_message(
                     event.reply_token,
