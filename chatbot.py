@@ -15,6 +15,7 @@ from botsession import BotSessionInterface
 from init import * # set constants
 from template_wrapper.carousel import generate_carousel_message_for_item # original template message wrapper
 from models import Item
+import static_message
 
 app = Flask(__name__)
 botSessionInterface = BotSessionInterface()
@@ -238,7 +239,7 @@ def flow_swicher(event, session):
         return( status_code )
 
 def show_command(event):
-    reply_text = "Command\n register / show / search / verify"
+    reply_text = static_message.REQUEST_COMMAND_INPUT
     reply_msg  = TextSendMessage(text=reply_text)
     line_bot_api.reply_message(
         event.reply_token,
