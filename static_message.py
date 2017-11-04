@@ -4,12 +4,12 @@ REQUEST_COMMAND_INPUT   = "メニューからコマンドを選択してくだ�
 
 # Used in register.py
 # message of basic reply
-BASIC_REPLY_IMAGE       = "画像を入力してください！"
+BASIC_REPLY_IMAGE       = "アイテムを登録します！ \n 画像を入力してください！"
 BASIC_REPLY_DESCRIPTION = "説明のための文章を入力してください！"
 BASIC_REPLY_LOCATION    = "現在地を入力してください！"
 
 # Used in search.py
-REQUEST_CURRENT_LOCATION = "周辺を検索します．現在地を入力してください！"
+REQUEST_CURRENT_LOCATION = "周辺を検索します:) 現在地を入力してください！"
 NO_ITEM_FOUND            = "あなたの周辺ではひとつもアイテムが見つかりませんでした ;("
 
 # Used in edit.py
