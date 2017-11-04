@@ -37,7 +37,7 @@ class ShowFlow:
         else:
             # when search success and some items found
             data        = eval( response.json() )
-            data        = data[0:5] # extract latest five items
+            data        = data[-5:] # extract latest five items
             for i in range(len(data)):
                 item = Item(
                     id = data[i]['id'],
