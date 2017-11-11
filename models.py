@@ -32,7 +32,3 @@ class Item:
         self.address = address
         self.latitude = latitude
         self.longitude = longitude
-
-    def register():
-        # TODO: send json to API server for register
-        pass
