@@ -31,7 +31,7 @@ ptyprocess==0.5.2
 pyasn1==0.3.2
 Pygments==2.2.0
 python-dateutil==2.6.1
-PyYAML==3.12
+PyYAML==5.4
 ratelim==0.1.6
 requests==2.18.4
 rsa==3.4.2
